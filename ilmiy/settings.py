@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'preffesors',
-    'teachers',
+    'professors',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -101,7 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login'
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
