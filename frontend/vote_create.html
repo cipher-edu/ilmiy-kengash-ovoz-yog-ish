@@ -1,0 +1,6 @@
+<!-- vote_create.html -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Vote</button>
+</form>

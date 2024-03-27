@@ -5,7 +5,11 @@ from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 urlpatterns = [
 
-    # path('register/', user_login, name='login')
+    path('', home, name='home'),
+    path('vote/', vote, name='vote'),
+    path('vote/create/', VoteCreateView.as_view(), name='vote_create'),
+    path('vote/<uuid:pk>/update/', VoteUpdateView.as_view(), name='vote_update'),
+    path('vote/<uuid:pk>/', VoteDetailView.as_view(), name='vote_detail'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', PasswordChangeView.as_view(), name='password_change'),

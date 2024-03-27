@@ -1,0 +1,80 @@
+<!-- vote.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote</title>
+    <style>
+        
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.default {
+  border: 2px solid #3498db;
+  color: #3498db;
+  background-color: #fff;
+}
+
+.default:hover {
+  background-color: #3498db;
+  color: #fff;
+}
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ilmiy unvonga tavsiya etish</h1>
+
+    {% if objects_for_voting %}
+        {% if not voted %}
+            <form method="post">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>Nomzodning ismi</th>
+                        <td>Unvon</td>
+                        <th>Tanlovingiz</th>
+                    </tr>
+                    {% for object in objects_for_voting %}
+                    <tr>
+                        <td>{{ object.name }}</td>
+                        <td>{{ object.unvon }}</td>
+                        <td>
+                            <label for="id_scientific_title_yes_{{ object.id }}"><input type="radio" id="id_scientific_title_yes_{{ object.id }}" name="scientific_title_{{ object.id }}" value="yes"> Yes</label>
+                            <label for="id_scientific_title_no_{{ object.id }}"><input type="radio" id="id_scientific_title_no_{{ object.id }}" name="scientific_title_{{ object.id }}" value="no"> No</label>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <br>
+                 <button class="button default" type="submit">Ovoz berish</button></a>
+            </form>
+        {% else %}
+            <p>You have already voted.</p>
+        {% endif %}
+    {% else %}
+        <p>There are no objects available for voting.</p>
+    {% endif %}
+</body>
+</html>

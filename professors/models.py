@@ -38,3 +38,25 @@ class UserCreate(models.Model):
     def __str__(self):
         return self.lastname
 
+class IlmiyUnvon(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
+    name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
+    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Fakulteti')
+    
+
+    def __str__(self):
+        return self.unvon
+    
+    class Meta:
+        verbose_name = "Ilmiy Unvon"
+        verbose_name_plural = "Ilmiy Unvonlar"
+
+class Vote(models.Model):
+    unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserCreate, on_delete=models.CASCADE)
+    scientific_title = models.CharField(max_length=3, choices=(('yes', 'Yes'), ('no', 'No')), default='no', verbose_name='Ilmiy unvon')
+   
+    class Meta:
+        verbose_name = "Ovoz berish"
+        verbose_name_plural = "Ovoz berish"
