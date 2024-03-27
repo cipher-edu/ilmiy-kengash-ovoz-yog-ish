@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles if needed */
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>Voting List</h1>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ilmiy Unvon</th>
+                        <th>Name</th>
+                        <th>Faculty</th>
+                        <th>Vote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unvon in unvons %}
+                    <tr>
+                        <td>{{ unvon.unvon }}</td>
+                        <td>{{ unvon.name }}</td>
+                        <td>{{ unvon.kaf }}</td>
+                        <td>
+                            {% if unvon.voted_by_user %}
+                                <p>Muvofaqiyatli ovoz berilgan.</p>
+                            {% else %}
+                                <form method="post" action="{% url 'vote' unvon.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-group d-flex">
+                                        <div class="form-check mr-3">
+                                            <input class="form-check-input" type="checkbox" name="scientific_title" id="xa" value="Xa">
+                                            <label class="form-check-label" for="xa">
+                                                Xa
+                                            </label>
+                                        </div>
+                                        <div class="form-check mr-3">
+                                            <input class="form-check-input" type="checkbox" name="scientific_title" id="yoq" value="yo'q">
+                                            <label class="form-check-label" for="yoq">
+                                                yo'q
+                                            </label>
+                                        </div>
+                                        <div class="form-check mr-3">
+                                            <input class="form-check-input" type="checkbox" name="scientific_title" id="betaraf" value="betaraf">
+                                            <label class="form-check-label" for="betaraf">
+                                                betaraf
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Vote</button>
+                                    </div>
+                                </form>
+                                <script>
+                                    // Ensure only one checkbox is checked
+                                    document.querySelectorAll('input[type="checkbox"][name="scientific_title"]').forEach((checkbox) => {
+                                        checkbox.addEventListener('change', () => {
+                                            if (checkbox.checked) {
+                                                document.querySelectorAll('input[type="checkbox"][name="scientific_title"]').forEach((otherCheckbox) => {
+                                                    if (otherCheckbox !== checkbox) {
+                                                        otherCheckbox.checked = false;
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    });
+                                </script>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

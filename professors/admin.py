@@ -4,5 +4,10 @@ from .models import *
 
 # Register your models here.
 admin.site.register(UserCreate)
-admin.site.register(IlmiyUnvon)
-admin.site.register(Vote)
+class UnvonAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+admin.site.register(IlmiyUnvon,UnvonAdmin)
+
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+admin.site.register(Vote,VoteAdmin)

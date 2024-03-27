@@ -1,40 +1,45 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic import CreateView
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .forms import UserAdditionalInfoForm
-from .models import *
+from .forms import UserAdditionalInfoForm, VoteForm
+from .models import UserCreate, IlmiyUnvon, Vote
 from django.views.generic import CreateView, UpdateView, DetailView
-from .forms import VoteForm
+
+
+
 
 @login_required
-def vote(request):
-    try:
-        user_create_instance = UserCreate.objects.get(user=request.user)
-    except UserCreate.DoesNotExist:
-        user_create_instance = None
-
-    objects_for_voting = IlmiyUnvon.objects.all()
-    
+def vote(request, unvon_id):
+    unvon = get_object_or_404(IlmiyUnvon, pk=unvon_id)
     if request.method == 'POST':
         form = VoteForm(request.POST)
         if form.is_valid():
-            unvon_id = form.cleaned_data['unvon']
-            unvon_object = IlmiyUnvon.objects.get(pk=unvon_id)
-            
-            vote_instance, created = Vote.objects.get_or_create(user=user_create_instance, defaults={'unvon': unvon_object})
-            if not created:
-                # User has already voted
-                return redirect('already_voted')
-
-            return redirect('home')
+            user = request.user
+            scientific_title = form.cleaned_data['scientific_title']
+            vote = Vote.objects.create(unvon=unvon, user=user, scientific_title=scientific_title)
+            return redirect('vote_success')
     else:
         form = VoteForm()
+    return render(request, 'vote.html', {'form': form})
 
-    return render(request, 'vote.html', {'form': form, 'objects_for_voting': objects_for_voting})
+def vote_success(request):
+    return render(request, 'vote_success.html')
+
+def vote_lists(request):
+    unvons = IlmiyUnvon.objects.all()
+    context = {'unvons': unvons}
+    return render(request, 'vote_natija.html', context)
+
+def vote_list(request):
+    unvons = IlmiyUnvon.objects.all()
+    user = request.user
+    for unvon in unvons:
+        unvon.voted_by_user = Vote.objects.filter(user=user, unvon=unvon).exists()
+    return render(request, 'vote_list.html', {'unvons': unvons})
+
 class VoteCreateView(CreateView):
     model = Vote
     form_class = VoteForm
@@ -51,12 +56,12 @@ class VoteDetailView(DetailView):
 
 @login_required
 def home(request):
-    vote = Vote.objects.all()
+    votes = Vote.objects.all()
     context = {
-        'vote':vote
+        'votes': votes
     }
     return render(request, 'index.html', context)
-# Create your views here.
+
 class SingUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
@@ -68,7 +73,6 @@ class SingUpView(CreateView):
         user.is_staff = True
         user.save()
         return super().form_valid(form)
-
 
 @login_required
 def user_info_form(request):

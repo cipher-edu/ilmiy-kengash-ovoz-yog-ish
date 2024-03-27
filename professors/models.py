@@ -43,7 +43,7 @@ class IlmiyUnvon(models.Model):
     unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
     kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Fakulteti')
-    
+    voted_by_user = models.BooleanField(default=False)  # Add this field
 
     def __str__(self):
         return self.unvon
@@ -52,11 +52,32 @@ class IlmiyUnvon(models.Model):
         verbose_name = "Ilmiy Unvon"
         verbose_name_plural = "Ilmiy Unvonlar"
 
+    def total_votes(self):
+        return self.vote_set.count()
+
+    def selected_votes(self):
+        return self.vote_set.filter(scientific_title__in=['Xa', 'Yo\'q', 'Betaraf']).count()
+
 class Vote(models.Model):
     unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
-    user = models.ForeignKey(UserCreate, on_delete=models.CASCADE)
-    scientific_title = models.CharField(max_length=3, choices=(('yes', 'Yes'), ('no', 'No')), default='no', verbose_name='Ilmiy unvon')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    scientific_title = models.CharField(max_length=20, choices=(('Xa', 'Xa'), ('yo\'q', 'Yo\'q'), ('betaraf', 'Betaraf')), default='no', verbose_name='Ilmiy unvon')
    
     class Meta:
         verbose_name = "Ovoz berish"
         verbose_name_plural = "Ovoz berish"
+        
+    def vote_for_title(self, user, scientific_title):
+        # Check if the user has already voted for this title
+        existing_vote = Vote.objects.filter(user=user, unvon=self.unvon).exists()
+        if existing_vote:
+            # If the user has already voted, you can handle this as per your requirement
+            # For example, raise an exception or return a message indicating that the user has already voted
+            # You can modify this part according to your application's logic
+            return "You have already voted for this title."
+        else:
+            # If the user hasn't voted, save the vote
+            self.user = user
+            self.scientific_title = scientific_title
+            self.save()
+            return "Vote successfully recorded."
