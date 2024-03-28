@@ -38,6 +38,7 @@ def vote_list(request):
     return render(request, 'vote_list.html', {'unvons': unvons})
 
 
+<<<<<<< HEAD
 class VoteStatisticsView(View):
     def get(self, request):
         titles = IlmiyUnvon.objects.all()
@@ -58,6 +59,35 @@ class VoteStatisticsView(View):
         return render(request, 'vote_natija.html', context)
 
 
+=======
+def vote_statistics(request):
+    ilmiy_unvon_list = IlmiyUnvon.objects.all()
+    vote_counts = {}
+    total_votes = Vote.objects.count()
+    selected_votes = Vote.objects.filter(scientific_title__in=['Xa', 'yoq', 'betaraf']).count()
+    
+    for ilmiy_unvon in ilmiy_unvon_list:
+        vote_counts[ilmiy_unvon] = ilmiy_unvon.count_votes_by_title()
+
+    return render(request, 'vote_natija.html', {
+        'vote_counts': vote_counts,
+        'total_votes': total_votes,
+        'selected_votes': selected_votes
+    })
+class VoteCreateView(CreateView):
+    model = Vote
+    form_class = VoteForm
+    template_name = 'vote_create.html'
+
+class VoteUpdateView(UpdateView):
+    model = Vote
+    form_class = VoteForm
+    template_name = 'vote_update.html'
+
+class VoteDetailView(DetailView):
+    model = Vote
+    template_name = 'vote_detail.html'
+>>>>>>> 5e6ea59226d4540fc9a0dd824fbfcbcf1d96c231
 
 @login_required
 def home(request):
