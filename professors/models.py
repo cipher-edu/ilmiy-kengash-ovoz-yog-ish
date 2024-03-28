@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin, User
 from django.db.models import Count
+from collections import Counter
 # Create your models here.
 fakultets = [
         ('Metematika - Informatika', 'Matematika - Informatika'),
@@ -24,7 +25,7 @@ class UserCreate(models.Model):
     name = models.CharField(max_length=25, verbose_name='Ismi')
     lastname = models.CharField(max_length=25, verbose_name='Familiyasi')
     surname = models.CharField(max_length=25, verbose_name='Otasining ismi')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Fakulteti')
+    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
     ilimiy_darajasi = models.CharField(max_length=255,  verbose_name='Ma\'lumoti')
     user_lavozimi = models.CharField(max_length=255, verbose_name='Lavozimi')
     tel = models.IntegerField(verbose_name='Telefon raqami')
@@ -39,90 +40,46 @@ class UserCreate(models.Model):
     def __str__(self):
         return self.lastname
 
+tanlov = (
+    ('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf'),
+)
 
-class IlmiyUnvon(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
-    name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Fakulteti')
-    voted_by_user = models.BooleanField(default=False)  # Add this field
 
-    def __str__(self):
-        return self.unvon
-    
-    class Meta:
-        verbose_name = "Ilmiy Unvon"
-        verbose_name_plural = "Ilmiy Unvonlar"
-
-    def total_votes(self):
-        return self.vote_set.count()
-
-    def selected_votes(self):
-        return self.vote_set.filter(scientific_title__in=['Xa', 'Yo\'q', 'Betaraf']).count()
-
-    def count_votes_for_scientific_title(self, scientific_title):
-        return self.vote_set.filter(scientific_title=scientific_title).count()
-
-class Vote(models.Model):
-    unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    scientific_title = models.CharField(max_length=20, choices=(('Xa', 'Xa'), ('yo\'q', 'Yo\'q'), ('betaraf', 'Betaraf')), default='betaraf', verbose_name='Ilmiy unvon')
-   
-    class Meta:
-        verbose_name = "Ovoz berish"
-        verbose_name_plural = "Ovoz berish"
-        
-    def vote_for_title(self, user, scientific_title):
-        # Check if the user has already voted for this title
-        existing_vote = Vote.objects.filter(user=user, unvon=self.unvon).exists()
-        if existing_vote:
-            return "You have already voted for this title."
-        else:
-            self.user = user
-            self.scientific_title = scientific_title
-            self.save()
-            return "Vote successfully recorded."
         
 class IlmiyUnvon(models.Model):
     id = models.CharField(primary_key=True, max_length=36, default=uuid.uuid4, editable=False)
-    unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Fakulteti')
+    unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
+    unvon_shifr = models.CharField(max_length=255, verbose_name='Ilmiy Unvon Shifri')
+    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
 
     def __str__(self):
-        return self.unvon
+        return self.name
     
     class Meta:
         verbose_name = "Ilmiy Unvon"
         verbose_name_plural = "Ilmiy Unvonlar"
 
-    def count_votes_by_title(self):
-        titles = dict(
-            self.vote_set.values('scientific_title').annotate(vote_count=Count('id'))
-        )
-        return titles
 
 
 class Vote(models.Model):
-    unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Foydalanuvchi ismi')
     scientific_title = models.CharField(
         max_length=20,
-        choices=(('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')),
+        choices=tanlov,
         default='betaraf',
-        verbose_name='Ilmiy unvon'
+        verbose_name="O'z ovozingini tanlang"
     )
-   
+
     class Meta:
         verbose_name = "Ovoz berish"
         verbose_name_plural = "Ovoz berish"
-        
-    def vote_for_title(self, user, scientific_title):
-        existing_vote = Vote.objects.filter(user=user, unvon=self.unvon).exists()
-        if existing_vote:
-            return "You have already voted for this title."
-        else:
-            self.user = user
-            self.scientific_title = scientific_title
-            self.save()
-            return "Vote successfully recorded."
+
+    @staticmethod
+    def count_votes():
+        votes = Vote.objects.all()
+        scientific_titles = [vote.scientific_title for vote in votes]
+        vote_counts = Counter(scientific_titles)
+        return dict(vote_counts)
+

@@ -1,0 +1,69 @@
+{% load static %}
+<header class="topbar" data-navbarbg="skin5">
+    <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+        <div class="navbar-header" data-logobg="skin6">
+            <!-- ============================================================== -->
+            <!-- Logo -->
+            <!-- ============================================================== -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <!-- Logo icon -->
+                <span class="logo-text" style="color: black !important; font-weight: bold; ">
+                     Dastur test rejimida
+                </span>
+                
+            </a>
+            <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none"
+                href="javascript:void(0)"><i class="ti-menu ti-close"></i></a>
+        </div>
+        
+    </nav>
+</header>
+<aside class="left-sidebar" data-sidebarbg="skin6">
+    <!-- Sidebar scroll-->
+    <div class="scroll-sidebar">
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+            <ul id="sidebarnav">
+                <!-- User Profile-->
+                <li class="sidebar-item pt-2">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'home' %}"
+                        aria-expanded="false">
+                        <i class="far fa-clock" aria-hidden="true"></i>
+                        <span class="hide-menu">Bosh sahifa</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'user_info' %}"
+                        aria-expanded="false">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <span class="hide-menu">Shaxsiy ma'lumotlar</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'list' %}"
+                        aria-expanded="false">
+                        <i class=" far fa-check-circle" aria-hidden="true"></i>
+                        <span class="hide-menu">Ovoz berish</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'stat' %}"
+                        aria-expanded="false">
+                        <i class="far fa-chart-bar" aria-hidden="true"></i>
+                        <span class="hide-menu">Natijalar</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'logout' %}"
+                        aria-expanded="false">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                        <span class="hide-menu">Chiqish</span>
+                    </a>
+                </li>
+            </ul>
+
+        </nav>
+        <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+</aside>
