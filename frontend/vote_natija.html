@@ -2,30 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vote Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilmiy Unvon List</title>
 </head>
 <body>
-    <h1>Vote Statistics</h1>
-
-    <h2>Total Votes: {{ total_votes }}</h2>
-    <h2>Selected Votes: {{ selected_votes }}</h2>
-
+    <h1>Ilmiy Unvonlar</h1>
     <table border="1">
         <thead>
             <tr>
                 <th>Ilmiy Unvon</th>
-                <th>Xa</th>
-                <th>Yoq</th>
-                <th>Betaraf</th>
+                <th>Fakulteti</th>
+                <th>Votes</th>
+                <th>Votes by Scientific Title</th>
             </tr>
         </thead>
         <tbody>
-            {% for ilmiy_unvon, vote_count_dict in vote_counts.items %}
+            {% for ilmiy_unvon_instance in ilmiy_unvon_instances %}
             <tr>
-                <td>{{ ilmiy_unvon.unvon }}</td>
-                <td>{{ vote_count_dict.Xa }}</td>
-                <td>{{ vote_count_dict.yoq }}</td>
-                <td>{{ vote_count_dict.betaraf }}</td>
+                <td>{{ ilmiy_unvon_instance.unvon }}</td>
+                <td>{{ ilmiy_unvon_instance.kaf }}</td>
+                <td>{{ ilmiy_unvon_instance.total_votes }}</td>
+                <td>{{ ilmiy_unvon_instance.votes_by_scientific_title }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -51,8 +51,6 @@ def vote_statistics(request):
         'total_votes': total_votes,
         'selected_votes': selected_votes
     })
-
-
 class VoteCreateView(CreateView):
     model = Vote
     form_class = VoteForm

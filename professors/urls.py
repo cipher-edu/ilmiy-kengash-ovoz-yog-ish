@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView,
 urlpatterns = [
     path('', home, name='home'),
     path('vote/<uuid:unvon_id>/', vote, name='vote'),
+
   path('vote/success/', vote_success, name='vote_success'),
     path('vote/create/', VoteCreateView.as_view(), name='vote_create'),
     path('vote/<int:pk>/update/', VoteUpdateView.as_view(), name='vote_update'),
