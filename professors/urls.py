@@ -22,7 +22,7 @@ urlpatterns = [
     path('signup/', SingUpView.as_view(), name='signup'),
     path('user-info/', user_info_form, name='user_info'),
     path('list/', vote_list, name='list'),
-    path('natija/', vote_lists, name='natija')
+    path('stat/', vote_statistics)
 ]
 
 if settings.DEBUG:

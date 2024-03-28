@@ -2,60 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voting List</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles if needed */
-    </style>
+    <title>Vote Statistics</title>
 </head>
 <body>
-    <h1>Voting List</h1>
+    <h1>Vote Statistics</h1>
 
-    <div class="container-fluid">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Ilmiy Unvon</th>
-                    <th>Name</th>
-                    <th>Faculty</th>
-                    <th>Total Votes</th>
-                    <th>Xa Votes</th>
-                    <th>Yoq Votes</th>
-                    <th>Betaraf Votes</th>
-                    <th>Vote</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for unvon in unvons %}
-                <tr>
-                    <td>{{ unvon.unvon }}</td>
-                    <td>{{ unvon.name }}</td>
-                    <td>{{ unvon.kaf }}</td>
-                    <td>{{ unvon.total_votes }}</td>
-                    <td>{{ unvon.xa_votes }}</td>
-                    <td>{{ unvon.yoq_votes }}</td>
-                    <td>{{ unvon.betaraf_votes }}</td>
-                    <td>
-                        {% if unvon.voted_by_user %}
-                            <p>You have already voted.</p>
-                        {% else %}
-                            <form method="post" action="{% url 'vote' unvon.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Vote</button>
-                            </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <h2>Total Votes: {{ total_votes }}</h2>
+    <h2>Selected Votes: {{ selected_votes }}</h2>
 
-    <!-- Bootstrap JS and jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Ilmiy Unvon</th>
+                <th>Xa</th>
+                <th>Yoq</th>
+                <th>Betaraf</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ilmiy_unvon, vote_count_dict in vote_counts.items %}
+            <tr>
+                <td>{{ ilmiy_unvon.unvon }}</td>
+                <td>{{ vote_count_dict.Xa }}</td>
+                <td>{{ vote_count_dict.yoq }}</td>
+                <td>{{ vote_count_dict.betaraf }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

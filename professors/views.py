@@ -28,10 +28,6 @@ def vote(request, unvon_id):
 def vote_success(request):
     return render(request, 'vote_success.html')
 
-def vote_lists(request):
-    unvons = IlmiyUnvon.objects.all()
-    context = {'unvons': unvons}
-    return render(request, 'vote_natija.html', context)
 
 def vote_list(request):
     unvons = IlmiyUnvon.objects.all()
@@ -39,6 +35,23 @@ def vote_list(request):
     for unvon in unvons:
         unvon.voted_by_user = Vote.objects.filter(user=user, unvon=unvon).exists()
     return render(request, 'vote_list.html', {'unvons': unvons})
+
+
+def vote_statistics(request):
+    ilmiy_unvon_list = IlmiyUnvon.objects.all()
+    vote_counts = {}
+    total_votes = Vote.objects.count()
+    selected_votes = Vote.objects.filter(scientific_title__in=['Xa', 'yoq', 'betaraf']).count()
+    
+    for ilmiy_unvon in ilmiy_unvon_list:
+        vote_counts[ilmiy_unvon] = ilmiy_unvon.count_votes_by_title()
+
+    return render(request, 'vote_natija.html', {
+        'vote_counts': vote_counts,
+        'total_votes': total_votes,
+        'selected_votes': selected_votes
+    })
+
 
 class VoteCreateView(CreateView):
     model = Vote
