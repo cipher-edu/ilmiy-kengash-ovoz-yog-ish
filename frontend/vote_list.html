@@ -40,7 +40,7 @@
                     <div class="white-box">
                         <center>
                             <span style="font-weight: bold; color: #000;">
-                                Navoiy davlat pedagogika instituti Kengashining 2024 yil fevral oyidagi 8-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
+                                Navoiy davlat pedagogika instituti Kengashining 2024 yil mart oyidagi 9-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
                             </span>
                             <br>
                             <span style="font-weight: bold; color: #000;">
@@ -67,11 +67,11 @@
                                             <td>{{unvon.unvon_shifr}}</td>
                                             <td>
                                                 {% if unvon.voted_by_user %}
-                                                    <p style="color: green; font-weight: bold; ">Muvofaqiyatli ovoz berilgan.</p>
+                                                    <p style="color: green; font-weight: bold; ">Muvaffaqiyatli ovoz berilgan.</p>
                                                 {% else %}
                                             <form method="post" action="{% url 'vote' unvon.id %}">
                                                 {% csrf_token %}
-                                                <button type="submit" class="btn btn-primary">Vote</button>
+                                                <button type="submit" class="btn btn-primary">Ovoz berish</button>
                                                 
                                             </form>
                                             <script>
