@@ -30,7 +30,7 @@ html orqali yuborilgan ma'lumotlar saqlanmayapti hatolikni aniqla
                     <div class="white-box">
                         <center>
                             <span style="font-weight: bold; color: #000;">
-                                Navoiy davlat pedagogika instituti Kengashining 2024 yil fevral oyidagi 8-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
+                                Navoiy davlat pedagogika instituti Kengashining 2024 yil mart oyidagi 9-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
                             </span>
                             <br>
                             <span style="font-weight: bold; color: #000;">
@@ -43,6 +43,7 @@ html orqali yuborilgan ma'lumotlar saqlanmayapti hatolikni aniqla
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
+<<<<<<< HEAD
                                             <th class="border-top-0">Ism Familiya</th>
                                             <th class="border-top-0">Kafedra nomi</th>
                                             <th class="border-top-0">Ilmiy unvon</th>
@@ -76,6 +77,41 @@ html orqali yuborilgan ma'lumotlar saqlanmayapti hatolikni aniqla
                             </div>
                             <button type="submit" class="btn btn-primary">Ovoz berish</button>
                         </form>
+=======
+                                            <td>{{ unvon.name }}</td>
+                                            <td>{{ unvon.kaf }}</td>
+                                            <td>{{ unvon.unvon }}</td>
+                                            <td>{{unvon.unvon_shifr}}</td>
+                                            <td>
+                                                {% if unvon.voted_by_user %}
+                                                    <p style="color: green; font-weight: bold; ">Muvaffaqiyatli ovoz berilgan.</p>
+                                                {% else %}
+                                            <form method="post" action="{% url 'vote' unvon.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-primary">Ovoz berish</button>
+                                                
+                                            </form>
+                                            <script>
+                                                // Ensure only one checkbox is checked
+                                                document.querySelectorAll('input[type="checkbox"][name="scientific_title"]').forEach((checkbox) => {
+                                                    checkbox.addEventListener('change', () => {
+                                                        if (checkbox.checked) {
+                                                            document.querySelectorAll('input[type="checkbox"][name="scientific_title"]').forEach((otherCheckbox) => {
+                                                                if (otherCheckbox !== checkbox) {
+                                                                    otherCheckbox.checked = false;
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                });
+                                            </script>
+                            {% endif %}
+                        </td>
+                                        </tr> {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+>>>>>>> 453e8c51bdc84fdbd4bcf278f5016d15c1ba53f9
                     </div>
                 </div>
             </div>

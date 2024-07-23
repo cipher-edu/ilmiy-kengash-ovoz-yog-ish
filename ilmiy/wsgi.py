@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 WSGI config for ilmiy project.
 
@@ -7,8 +8,9 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 """
 
+=======
+>>>>>>> 453e8c51bdc84fdbd4bcf278f5016d15c1ba53f9
 import os
-
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ilmiy.settings')

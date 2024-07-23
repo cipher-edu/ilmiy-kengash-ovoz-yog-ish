@@ -5,19 +5,34 @@ from django.db.models import Count
 from collections import Counter
 # Create your models here.
 fakultets = [
-        ('Metematika - Informatika', 'Matematika - Informatika'),
-        ('Fizika', 'Fizika'),
-        ('Sana\'tshunoslik','Sana\'tshunoslik'),
-        ('Jismoniy madaniyat','Jismoniy madaniyat'),
-        ('Tabiy fanlar', 'Tabiy fanlar'),
-        ('Ingliz tili va adabiyoti','Ingliz tili va adabiyoti'),
-        ('Rus tili va Qozoq tillari filialogiyasi', 'Rus tili va Qozoq tillari filialogiyasi'),
-        ('Tibbiyot','Tibbiyot'),
-        ('Maktabgacha va boshlang\'ich ta\'lim','Maktabgacha va boshlang\'ich ta\'lim'),
-        ('Tarix', 'Tarix'),
-        ('O‘zbek tili va adabiyoti fakulteti', 'O‘zbek tili va adabiyoti fakulteti'),
-
+        ("Umumiy pedagogika va psixologiya","Umumiy pedagogika va psixologiya"),
+        ("Maktabgacha ta’lim", "Maktabgacha ta’lim"),
+        ("Boshlang‘ich ta’lim", "Boshlang‘ich ta’lim"),
+        ("Pedagogika va psixologiya", "Pedagogika va psixologiya"),
+        ("Musiqa ta’limi", "Musiqa ta’limi"),
+        ("Tasviriy san’at va muhandislik grafikasi", "Tasviriy san’at va muhandislik grafikasi"),
+        ("Biologiya", "Biologiya"),
+        ("Kimyo", "Kimyo"),
+        ("Geografiya va iqtisodiy bilim asoslari", "Geografiya va iqtisodiy bilim asoslari"),
+        ("Matematika", "Matematika"),
+        ("Informatika", "Informatika"),
+        ("Fizika va astronomiya", "Fizika va astronomiya"),
+        ("Texnologik ta’lim", "Texnologik ta’lim"),
+        ("O‘zbek tilshunosligi", "O‘zbek tilshunosligi"),
+        ("O‘zbek tili va adabiyoti", "O‘zbek tili va adabiyoti"),
+        ("Tarix", "Tarix"),
+        ("Milliy g‘oya, ma’naviyat asoslari va huquq ta’limi", "Milliy g‘oya, ma’naviyat asoslari va huquq ta’limi"),
+        ("Ijtimoiy fanlar", "Ijtimoiy fanlar"),
+        ("Jismoni madaniyat", "Jismoni madaniyat"),
+        ("Sport turlarini o‘qitish metodikasi", "Sport turlarini o‘qitish metodikasi"),
+        ("Ingliz tili va adabiyoti", "Ingliz tili va adabiyoti"),
+        ("Ingliz tili amaliy kursi", "Ingliz tili amaliy kursi"),
+        ("Fakultetlararo chet tillar", "Fakultetlararo chet tillar"),
+        ("Rus tili va adabiyoti", "Rus tili va adabiyoti"),
+        ("Qozoq tili va adabiyoti", "Qozoq tili va adabiyoti"),
+        ("Umumiy tibbiy fanlar", "Umumiy tibbiy fanlar"),
     ]
+
 
 class UserCreate(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
