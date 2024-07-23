@@ -18,11 +18,11 @@ class UserAdditionalInfoForm(forms.ModelForm):
             'telegram': forms.TextInput(attrs={'class':'form-control col-md-12 mb-6'}),
             'mail': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
         }
-
+        
 class VoteForm(forms.ModelForm):
     class Meta:
         model = Vote
-        fields = ['scientific_title']
+        fields = ['tanlov', 'ilmiy_unvon', 'ovoz']
         widgets = {
-          'scientific_title'  : forms.Select(attrs={'class':'form-control'}),
+            'ovoz': forms.RadioSelect(choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')])
         }

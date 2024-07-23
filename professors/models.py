@@ -44,8 +44,15 @@ tanlov = (
     ('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf'),
 )
 
+tanlovcha = (
+    ('kafedra mudiri', 'kafedra mudiri'), 
+    ('kafedra professori', 'kafedra professori'), 
+    ('kafedra dotsenti', 'kafedra dotsenti'), 
+    ("kafedra katta o‘qituvchisi","kafedra katta o‘qituvchisi"), 
+    ("kafedra o‘qituvchisi lavozimi","kafedra o‘qituvchisi lavozimi")
+)
 
-        
+# IlmiyUnvon modeli
 class IlmiyUnvon(models.Model):
     id = models.CharField(primary_key=True, max_length=36, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
@@ -55,31 +62,58 @@ class IlmiyUnvon(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = "Ilmiy Unvon"
         verbose_name_plural = "Ilmiy Unvonlar"
 
+# Tanlov modeli
+class Tanlov(models.Model):
+    id = models.CharField(primary_key=True, max_length=36, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
+    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
+    scientific_title = models.CharField(max_length=255, choices=tanlovcha, verbose_name="Lavozimni tanlang")
 
-
-class Vote(models.Model):
-    unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Foydalanuvchi ismi')
-    scientific_title = models.CharField(
-        max_length=20,
-        choices=tanlov,
-        default='betaraf',
-        verbose_name="O'z ovozingini tanlang"
-    )
+    def __str__(self):
+        return self.name
 
     class Meta:
-        verbose_name = "Ovoz berish"
-        verbose_name_plural = "Ovoz berish"
+        verbose_name = "Tanlov"
+        verbose_name_plural = "Tanlovlar"
 
-    @staticmethod
-    def count_votes():
-        votes = Vote.objects.all()
-        scientific_titles = [vote.scientific_title for vote in votes]
-        vote_counts = Counter(scientific_titles)
-        return dict(vote_counts)
+# Vote modeli
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Add this line
+    tanlov = models.ForeignKey(Tanlov, on_delete=models.CASCADE)
+    ilmiy_unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
+    ovoz = models.CharField(max_length=10, choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')], verbose_name='Ovoz')
+
+    def __str__(self):
+        return f"{self.tanlov.name} - {self.ilmiy_unvon.name} - {self.ovoz}"
+
+    class Meta:
+        verbose_name = "Ovoz Berish"
+        verbose_name_plural = "Ovoz Berishlar"
+
+
+
+    # unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Foydalanuvchi ismi')
+    # scientific_title = models.CharField(
+    #     max_length=20,
+    #     choices=tanlov,
+    #     default='betaraf',
+    #     verbose_name="O'z ovozingini tanlang"
+    # )
+
+    # class Meta:
+    #     verbose_name = "Ovoz berish"
+    #     verbose_name_plural = "Ovoz berish"
+
+    # @staticmethod
+    # def count_votes():
+    #     votes = Vote.objects.all()
+    #     scientific_titles = [vote.scientific_title for vote in votes]
+    #     vote_counts = Counter(scientific_titles)
+    #     return dict(vote_counts)
 

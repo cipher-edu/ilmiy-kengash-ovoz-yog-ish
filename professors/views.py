@@ -1,54 +1,99 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.generic import CreateView, UpdateView, DetailView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.http import HttpResponse
-from django.views.generic import CreateView
-from django.contrib.auth.decorators import login_required
-from .forms import UserAdditionalInfoForm, VoteForm
-from .models import *
-from django.views.generic import CreateView, UpdateView, DetailView, View
+from .forms import *
+from .models import IlmiyUnvon, Vote, Tanlov
 
+def error_view(request):
+    return render(request, 'error.html')
 
-def handler404(request, exception):
-    return render(request, '404.html', status=404)
+def success_view(request):
+    return render(request, 'success.html')
+@login_required
+def vote_list(request):
+    if request.method == 'POST':
+        tanlov_id = request.POST.get('tanlov_id')
+
+        if not tanlov_id:
+            return render(request, 'vote_list.html', {'error': 'Tanlov ID is missing'})
+
+        try:
+            tanlov = Tanlov.objects.get(id=tanlov_id)
+        except Tanlov.DoesNotExist:
+            return render(request, 'vote_list.html', {'error': 'Invalid Tanlov ID'})
+
+        form = VoteForm(request.POST, tanlov=tanlov)
+        if form.is_valid():
+            try:
+                form.save(user=request.user)
+                return redirect('success')
+            except Exception as e:
+                return render(request, 'vote_list.html', {'form': form, 'error': str(e)})
+        else:
+            return render(request, 'vote_list.html', {'form': form})
+
+    else:
+        tanlov_id = request.GET.get('tanlov_id')
+
+        if not tanlov_id:
+            return render(request, 'vote_list.html', {'error': 'Tanlov ID is missing'})
+
+        try:
+            tanlov = Tanlov.objects.get(id=tanlov_id)
+        except Tanlov.DoesNotExist:
+            return render(request, 'vote_list.html', {'error': 'Invalid Tanlov ID'})
+
+        unvons = IlmiyUnvon.objects.all()
+        voted_unvons = Vote.objects.filter(user=request.user, tanlov=tanlov).values_list('ilmiy_unvon_id', flat=True)
+        context = {
+            'unvons': unvons,
+            'voted_unvons': voted_unvons,
+            'tanlov_id': tanlov_id,
+            'form': VoteForm(tanlov=tanlov)
+        }
+        return render(request, 'vote_list.html', context)
 
 @login_required
-def vote(request, unvon_id):
-    unvon = get_object_or_404(IlmiyUnvon, pk=unvon_id)
-    if request.method == 'POST':
-        form = VoteForm(request.POST)
-        if form.is_valid():
-            user = request.user
-            scientific_title = form.cleaned_data['scientific_title']
-            vote = Vote.objects.create(unvon=unvon, user=user, scientific_title=scientific_title)
-            return redirect('vote_success')
-    else:
-        form = VoteForm()
-    return render(request, 'vote.html', {'form': form})
-
 def vote_success(request):
     return render(request, 'vote_success.html')
 
 
-def vote_list(request):
-    unvons = IlmiyUnvon.objects.all()
-    user = request.user
-    for unvon in unvons:
-        unvon.voted_by_user = Vote.objects.filter(user=user, unvon=unvon).exists()
-    return render(request, 'vote_list.html', {'unvons': unvons})
+@login_required
+def vote(request, unvon_id):
+    unvon = get_object_or_404(IlmiyUnvon, pk=unvon_id)
+    
+    if request.method == 'POST':
+        form = VoteForm(request.POST)
+        if form.is_valid():
+            ovoz = form.cleaned_data['ovoz']
+            # Check if the user has already voted for this unvon
+            if not Vote.objects.filter(user=request.user, ilmiy_unvon=unvon).exists():
+                Vote.objects.create(
+                    ilmiy_unvon=unvon,
+                    user=request.user,
+                    ovoz=ovoz
+                )
+                return redirect('vote_success')
+            else:
+                # Handle the case where the user has already voted
+                return render(request, 'vote.html', {'form': form, 'unvon': unvon, 'error': 'Siz allaqachon ovoz berdingiz.'})
+    else:
+        form = VoteForm()
+    
+    return render(request, 'vote.html', {'form': form, 'unvon': unvon})
 
-
-<<<<<<< HEAD
 class VoteStatisticsView(View):
     def get(self, request):
         titles = IlmiyUnvon.objects.all()
         vote_counts = {}
         for title in titles:
-            title_votes = Vote.objects.filter(unvon=title)
+            title_votes = Vote.objects.filter(ilmiy_unvon=title)
             vote_counts[title] = {
-                'xa': title_votes.filter(scientific_title='Xa').count(),
-                'yoq': title_votes.filter(scientific_title='yoq').count(),
-                'betaraf': title_votes.filter(scientific_title='betaraf').count()
+                'xa': title_votes.filter(ovoz='Xa').count(),
+                'yoq': title_votes.filter(ovoz='yoq').count(),
+                'betaraf': title_votes.filter(ovoz='betaraf').count()
             }
         total_votes = Vote.objects.count()
         context = {
@@ -58,13 +103,11 @@ class VoteStatisticsView(View):
         }
         return render(request, 'vote_natija.html', context)
 
-
-=======
 def vote_statistics(request):
     ilmiy_unvon_list = IlmiyUnvon.objects.all()
     vote_counts = {}
     total_votes = Vote.objects.count()
-    selected_votes = Vote.objects.filter(scientific_title__in=['Xa', 'yoq', 'betaraf']).count()
+    selected_votes = Vote.objects.filter(ovoz__in=['Xa', 'yoq', 'betaraf']).count()
     
     for ilmiy_unvon in ilmiy_unvon_list:
         vote_counts[ilmiy_unvon] = ilmiy_unvon.count_votes_by_title()
@@ -74,6 +117,7 @@ def vote_statistics(request):
         'total_votes': total_votes,
         'selected_votes': selected_votes
     })
+
 class VoteCreateView(CreateView):
     model = Vote
     form_class = VoteForm
@@ -87,7 +131,6 @@ class VoteUpdateView(UpdateView):
 class VoteDetailView(DetailView):
     model = Vote
     template_name = 'vote_detail.html'
->>>>>>> 5e6ea59226d4540fc9a0dd824fbfcbcf1d96c231
 
 @login_required
 def home(request):

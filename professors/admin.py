@@ -2,16 +2,17 @@ from django.contrib import admin
 from .models import *       
 
 
-# Register your models here.
-admin.site.register(UserCreate)
-class UnvonAdmin(admin.ModelAdmin):
-    list_display = ('name','unvon', 'unvon_shifr', 'kaf',)
-    list_filter = ('name','unvon', 'unvon_shifr', 'kaf',)
-    list_per_page = 15
-admin.site.register(IlmiyUnvon,UnvonAdmin)
+@admin.register(IlmiyUnvon)
+class IlmiyUnvonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'unvon', 'unvon_shifr', 'kaf')
+    search_fields = ('name', 'unvon', 'unvon_shifr', 'kaf')
 
+@admin.register(Tanlov)
+class TanlovAdmin(admin.ModelAdmin):
+    list_display = ('name', 'kaf', 'scientific_title')
+    search_fields = ('name', 'kaf', 'scientific_title')
+
+@admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):
-    list_display = ('unvon','user', 'scientific_title')
-    list_filter = ('unvon','user', 'scientific_title')
-    list_per_page = 25
-admin.site.register(Vote,VoteAdmin)
+    list_display = ('tanlov', 'ilmiy_unvon', 'ovoz')
+    search_fields = ('tanlov__name', 'ilmiy_unvon__name', 'ovoz')
