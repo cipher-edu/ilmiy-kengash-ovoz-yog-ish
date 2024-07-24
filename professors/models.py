@@ -69,7 +69,6 @@ tanlovcha = (
 
 # IlmiyUnvon modeli
 class IlmiyUnvon(models.Model):
-    id = models.CharField(primary_key=True, max_length=36, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
     unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
     unvon_shifr = models.CharField(max_length=255, verbose_name='Ilmiy Unvon Shifri')
@@ -84,7 +83,6 @@ class IlmiyUnvon(models.Model):
 
 # Tanlov modeli
 class Tanlov(models.Model):
-    id = models.CharField(primary_key=True, max_length=36, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
     kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
     scientific_title = models.CharField(max_length=255, choices=tanlovcha, verbose_name="Lavozimni tanlang")
@@ -96,20 +94,30 @@ class Tanlov(models.Model):
         verbose_name = "Tanlov"
         verbose_name_plural = "Tanlovlar"
 
-# Vote modeli
 class Vote(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Add this line
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     tanlov = models.ForeignKey(Tanlov, on_delete=models.CASCADE)
-    ilmiy_unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
+    
     ovoz = models.CharField(max_length=10, choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')], verbose_name='Ovoz')
 
     def __str__(self):
-        return f"{self.tanlov.name} - {self.ilmiy_unvon.name} - {self.ovoz}"
+        return f"{self.tanlov.name} - {self.ovoz}"
 
     class Meta:
         verbose_name = "Ovoz Berish"
         verbose_name_plural = "Ovoz Berishlar"
 
+class Vote2(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ilmiy = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
+    ovoz = models.CharField(max_length=10, choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')], verbose_name='Ovoz')
+
+    def __str__(self):
+        return f"{self.ilmiy.name} - {self.ovoz}"
+
+    class Meta:
+        verbose_name = "Ovoz Berish"
+        verbose_name_plural = "Ovoz Berishlar"
 
 
     # unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')

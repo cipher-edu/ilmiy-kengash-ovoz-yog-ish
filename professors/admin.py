@@ -14,5 +14,10 @@ class TanlovAdmin(admin.ModelAdmin):
 
 @admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):
-    list_display = ('tanlov', 'ilmiy_unvon', 'ovoz')
-    search_fields = ('tanlov__name', 'ilmiy_unvon__name', 'ovoz')
+    list_display = ('tanlov',  'ovoz')
+    search_fields = ('tanlov__name',  'ovoz')
+
+@admin.register(Vote2)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ('ilmiy',  'ovoz')
+    search_fields = ('ilmiy__name',  'ovoz')

@@ -5,84 +5,103 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from .forms import *
 from .models import IlmiyUnvon, Vote, Tanlov
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 def error_view(request):
     return render(request, 'error.html')
 
 def success_view(request):
     return render(request, 'success.html')
+
 @login_required
-def vote_list(request):
+def tanlov_list(request):
+    unvons = Tanlov.objects.all()
+    voted_unvons = Vote.objects.filter(user=request.user).values_list('tanlov_id', flat=True)
+    return render(request, 'vote_list.html', {'unvons': unvons, 'voted_unvons': voted_unvons})
+@csrf_exempt
+@login_required
+def vote(request):
     if request.method == 'POST':
-        tanlov_id = request.POST.get('tanlov_id')
+        user = request.user
+        vote_data = {}
 
-        if not tanlov_id:
-            return render(request, 'vote_list.html', {'error': 'Tanlov ID is missing'})
+        # Collect vote data
+        for unvon_id in request.POST.getlist('unvon_ids'):
+            vote_value = request.POST.get(f'votes_{unvon_id}')
+            if vote_value:
+                vote_data[unvon_id] = vote_value
 
-        try:
-            tanlov = Tanlov.objects.get(id=tanlov_id)
-        except Tanlov.DoesNotExist:
-            return render(request, 'vote_list.html', {'error': 'Invalid Tanlov ID'})
-
-        form = VoteForm(request.POST, tanlov=tanlov)
-        if form.is_valid():
+        # Save votes
+        for unvon_id, vote_value in vote_data.items():
             try:
-                form.save(user=request.user)
-                return redirect('success')
-            except Exception as e:
-                return render(request, 'vote_list.html', {'form': form, 'error': str(e)})
-        else:
-            return render(request, 'vote_list.html', {'form': form})
+                tanlov = Tanlov.objects.get(id=unvon_id)
+                Vote.objects.update_or_create(
+                    user=user,
+                    tanlov=tanlov,
+                    defaults={'ovoz': vote_value}
+                )
+            except Tanlov.DoesNotExist:
+                continue
 
-    else:
-        tanlov_id = request.GET.get('tanlov_id')
+        return JsonResponse({'status': 'success', 'message': 'Ovoz muvaffaqiyatli saqlandi.'})
 
-        if not tanlov_id:
-            return render(request, 'vote_list.html', {'error': 'Tanlov ID is missing'})
+    return JsonResponse({'status': 'error', 'message': 'Noto\'g\'ri so\'rov turi.'})
 
-        try:
-            tanlov = Tanlov.objects.get(id=tanlov_id)
-        except Tanlov.DoesNotExist:
-            return render(request, 'vote_list.html', {'error': 'Invalid Tanlov ID'})
 
-        unvons = IlmiyUnvon.objects.all()
-        voted_unvons = Vote.objects.filter(user=request.user, tanlov=tanlov).values_list('ilmiy_unvon_id', flat=True)
-        context = {
-            'unvons': unvons,
-            'voted_unvons': voted_unvons,
-            'tanlov_id': tanlov_id,
-            'form': VoteForm(tanlov=tanlov)
-        }
-        return render(request, 'vote_list.html', context)
+
+
+@login_required
+def tanlov_list2(request):
+    ilmiy_unvons = IlmiyUnvon.objects.all()
+    voted_unvons = Vote2.objects.filter(user=request.user).values_list('ilmiy_id', flat=True)
+    return render(request, 'vote_list2.html', {'ilmiy_unvons': ilmiy_unvons, 'voted_unvons': voted_unvons})
+
+@csrf_exempt
+@login_required
+def vote2(request):
+    if request.method == 'POST':
+        user = request.user
+        vote_data = {}
+
+        # Collect vote data
+        for unvon_id in request.POST.getlist('unvon_ids'):
+            vote_value = request.POST.get(f'votes_{unvon_id}')
+            if vote_value:
+                vote_data[unvon_id] = vote_value
+
+        # Debugging output
+        print(f"Received vote data: {vote_data}")
+
+        # Save votes
+        for unvon_id, vote_value in vote_data.items():
+            try:
+                ilmiy_unvon = IlmiyUnvon.objects.get(id=unvon_id)
+                # Check if the vote already exists
+                vote, created = Vote2.objects.update_or_create(
+                    user=user,
+                    ilmiy=ilmiy_unvon,
+                    defaults={'ovoz': vote_value}
+                )
+                if created:
+                    print(f"Vote created: {vote}")
+                else:
+                    print(f"Vote updated: {vote}")
+            except IlmiyUnvon.DoesNotExist:
+                print(f"IlmiyUnvon with id {unvon_id} does not exist.")
+                continue
+
+        return JsonResponse({'status': 'success', 'message': 'Ovoz muvaffaqiyatli saqlandi.'})
+
+    return JsonResponse({'status': 'error', 'message': 'Noto\'g\'ri so\'rov turi.'})
+
 
 @login_required
 def vote_success(request):
     return render(request, 'vote_success.html')
 
 
-@login_required
-def vote(request, unvon_id):
-    unvon = get_object_or_404(IlmiyUnvon, pk=unvon_id)
-    
-    if request.method == 'POST':
-        form = VoteForm(request.POST)
-        if form.is_valid():
-            ovoz = form.cleaned_data['ovoz']
-            # Check if the user has already voted for this unvon
-            if not Vote.objects.filter(user=request.user, ilmiy_unvon=unvon).exists():
-                Vote.objects.create(
-                    ilmiy_unvon=unvon,
-                    user=request.user,
-                    ovoz=ovoz
-                )
-                return redirect('vote_success')
-            else:
-                # Handle the case where the user has already voted
-                return render(request, 'vote.html', {'form': form, 'unvon': unvon, 'error': 'Siz allaqachon ovoz berdingiz.'})
-    else:
-        form = VoteForm()
-    
-    return render(request, 'vote.html', {'form': form, 'unvon': unvon})
+
 
 class VoteStatisticsView(View):
     def get(self, request):

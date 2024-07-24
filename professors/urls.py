@@ -6,8 +6,6 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     path('', home, name='home'),
-    path('vote/<uuid:unvon_id>/', vote, name='vote'),
-    # path('vote/success/', vote_success, name='vote_success'),
     path('vote/create/', VoteCreateView.as_view(), name='vote_create'),
     path('vote/<int:pk>/update/', VoteUpdateView.as_view(), name='vote_update'),
     path('vote/<int:pk>/', VoteDetailView.as_view(), name='vote_detail'),
@@ -15,9 +13,11 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', SingUpView.as_view(), name='signup'),
     path('user-info/', user_info_form, name='user_info'),
-    path('list/', vote_list, name='list'),
     path('stat/', VoteStatisticsView.as_view(), name='stat'),
-    path('list/', vote_list, name='vote_list'),
+    path('list/', tanlov_list, name='tanlov_list'),
+    path('vote/', vote, name='vote'),  # Ensure this is the correct path
+    path('list2/', tanlov_list2, name='tanlov_list2'),
+    path('vote2/', vote2, name='vote2'), 
     path('success/', vote_success, name='vote_success'),
 ]
 

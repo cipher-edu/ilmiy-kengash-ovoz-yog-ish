@@ -19,10 +19,28 @@ class UserAdditionalInfoForm(forms.ModelForm):
             'mail': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
         }
         
+class TanlovForm(forms.ModelForm):
+    class Meta:
+        model = Tanlov
+        fields = ['name', 'kaf', 'scientific_title']
+        widgets = {
+            'name': forms.TextInput(attrs={'class':'form-control'}),
+            'kaf': forms.Select(attrs={'class':'form-control'}),
+            'scientific_title': forms.Select(attrs={'class':'form-control'}),
+        }
+
 class VoteForm(forms.ModelForm):
     class Meta:
         model = Vote
-        fields = ['tanlov', 'ilmiy_unvon', 'ovoz']
+        fields = ['ovoz']
+        widgets = {
+            'ovoz': forms.RadioSelect(choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')])
+        }
+
+class VoteForm(forms.ModelForm):
+    class Meta:
+        model = Vote2
+        fields = ['ovoz']
         widgets = {
             'ovoz': forms.RadioSelect(choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')])
         }
