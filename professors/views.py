@@ -6,8 +6,9 @@ from django.urls import reverse_lazy
 from .forms import *
 from .models import IlmiyUnvon, Vote, Tanlov
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-
+from django.db.models import Count, Q
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import render_to_string
 def error_view(request):
     return render(request, 'error.html')
 
@@ -19,6 +20,8 @@ def tanlov_list(request):
     unvons = Tanlov.objects.all()
     voted_unvons = Vote.objects.filter(user=request.user).values_list('tanlov_id', flat=True)
     return render(request, 'vote_list.html', {'unvons': unvons, 'voted_unvons': voted_unvons})
+
+
 @csrf_exempt
 @login_required
 def vote(request):
@@ -28,7 +31,7 @@ def vote(request):
 
         # Collect vote data
         for unvon_id in request.POST.getlist('unvon_ids'):
-            vote_value = request.POST.get(f'votes_{unvon_id}')
+            vote_value = request.POST.get(f'vote_{unvon_id}')
             if vote_value:
                 vote_data[unvon_id] = vote_value
 
@@ -44,6 +47,10 @@ def vote(request):
             except Tanlov.DoesNotExist:
                 continue
 
+        # Render the updated list of votes
+        unvons = Tanlov.objects.all()
+        voted_unvons = Vote.objects.filter(user=request.user).values_list('tanlov_id', flat=True)
+        html = render_to_string('vote_list.html', {'unvons': unvons, 'voted_unvons': voted_unvons})
         return JsonResponse({'status': 'success', 'message': 'Ovoz muvaffaqiyatli saqlandi.'})
 
     return JsonResponse({'status': 'error', 'message': 'Noto\'g\'ri so\'rov turi.'})
@@ -95,6 +102,28 @@ def vote2(request):
 
     return JsonResponse({'status': 'error', 'message': 'Noto\'g\'ri so\'rov turi.'})
 
+
+
+#statstic
+@login_required
+def vote_results(request):
+    # Aggregate votes for each Tanlov entry
+    results = Tanlov.objects.annotate(
+        xa_count=Count('vote', filter=Q(vote__ovoz='Xa')),
+        yoq_count=Count('vote', filter=Q(vote__ovoz='yoq')),
+        betaraf_count=Count('vote', filter=Q(vote__ovoz='betaraf'))
+    )
+    
+    results2 = Tanlov.objects.annotate(
+            xa_count=Count('vote', filter=Q(vote__ovoz='Xa')),
+            yoq_count=Count('vote', filter=Q(vote__ovoz='yoq')),
+            betaraf_count=Count('vote', filter=Q(vote__ovoz='betaraf'))
+        )
+    ctx = {
+         'results': results,
+         'results2': results2
+    }
+    return render(request, 'vote_results.html', {'results': results}, {'results2': results2})
 
 @login_required
 def vote_success(request):

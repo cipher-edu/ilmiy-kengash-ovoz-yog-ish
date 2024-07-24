@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+
+{% load static %}
+
+<html dir="ltr" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="admin dashboard, bootstrap 5 admin, web dashboard, etc.">
+    <meta name="description" content="Ample Admin Lite is a powerful and clean admin dashboard template.">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Kengash ovoz yig'ish created By CIPHER-EDU</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plugins/images/favicon.png' %}">
+    <link href="{% static 'plugins/bower_components/chartist/dist/chartist.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css' %}">
+    <link href="{% static 'css/style.min.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        {% include 'base/navbar.html' %}
+        <div class="page-wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="white-box">
+                        <h3 class="box-title">Voting Results for Tanlov</h3>
+                        <div class="table-responsive">
+                            <table class="table text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ism Familiya</th>
+                                        <th>Kafedra nomi</th>
+                                        <th>Xo</th>
+                                        <th>Yoq</th>
+                                        <th>Betaraf</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tanlov in results %}
+                                        <tr>
+                                            <td>{{ tanlov.id }}</td>
+                                            <td>{{ tanlov.name }}</td>
+                                            <td>{{ tanlov.kaf }}</td>
+                                            <td>{{ tanlov.xa_count }}</td>
+                                            <td>{{ tanlov.yoq_count }}</td>
+                                            <td>{{ tanlov.betaraf_count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="white-box">
+                        <h3 class="box-title">Voting Results for IlmiyUnvon</h3>
+                        <div class="table-responsive">
+                            <table class="table text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ism Familiya</th>
+                                        <th>Ilmiy Unvon</th>
+                                        <th>Ilmiy Unvon Shifri</th>
+                                        <th>Kafedra nomi</th>
+                                        <th>Xo</th>
+                                        <th>Yoq</th>
+                                        <th>Betaraf</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ilmiyunvon in results2 %}
+                                        <tr>
+                                            <td>{{ ilmiyunvon.id }}</td>
+                                            <td>{{ ilmiyunvon.name }}</td>
+                                            <td>{{ ilmiyunvon.unvon }}</td>
+                                            <td>{{ ilmiyunvon.unvon_shifr }}</td>
+                                            <td>{{ ilmiyunvon.kaf }}</td>
+                                            <td>{{ ilmiyunvon.xa_count }}</td>
+                                            <td>{{ ilmiyunvon.yoq_count }}</td>
+                                            <td>{{ ilmiyunvon.betaraf_count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/app-style-switcher.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+    <script src="{% static 'js/waves.js' %}"></script>
+    <script src="{% static 'js/sidebarmenu.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
+</body>
+</html>

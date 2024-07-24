@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
@@ -30,16 +29,16 @@
                     <div class="white-box">
                         <center>
                             <span style="font-weight: bold; color: #000;">
-                                Navoiy davlat pedagogika instituti Kengashining 2024 yil mart oyidagi 9-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
+                                Navoiy davlat pedagogika instituti Kengashining 2024 yil fevral oyidagi 8-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
                             </span>
                             <br>
                             <span style="font-weight: bold; color: #000;">
                                 BYULLETENI
                             </span>
                         </center>
-                        <form id="vote-form">
+                        <form id="vote-form" method="post" action="{% url 'vote' %}">
                             {% csrf_token %}
-                            <div class="table-responsive">
+                            <div class="table-responsive" id="vote-table">
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
@@ -55,18 +54,18 @@
                                             <tr>
                                                 <td>{{ unvon.name }}</td>
                                                 <td>{{ unvon.kaf }}</td>
-                                                <td>{{ unvon.scientific_title }}</td>
+                                                <td>{{ unvon.unvon }}</td>
                                                 <td>{{ unvon.unvon_shifr }}</td>
                                                 <td>
                                                     {% if unvon.id in voted_unvons %}
                                                         <p style="color: green; font-weight: bold;">Muvofaqiyatli ovoz berilgan.</p>
                                                     {% else %}
                                                         <input type="hidden" name="unvon_ids" value="{{ unvon.id }}">
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="Xa" id="yes_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="Xa" id="yes_{{ unvon.id }}">
                                                         <label for="yes_{{ unvon.id }}">Xa</label><br>
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="yoq" id="no_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="yoq" id="no_{{ unvon.id }}">
                                                         <label for="no_{{ unvon.id }}">Yoq</label><br>
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="betaraf" id="neutral_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="betaraf" id="neutral_{{ unvon.id }}">
                                                         <label for="neutral_{{ unvon.id }}">Betaraf</label>
                                                     {% endif %}
                                                 </td>
@@ -97,20 +96,14 @@
         $(document).ready(function(){
             $('#vote-form').submit(function(event) {
                 event.preventDefault(); // Prevent the form from submitting the traditional way
-
+    
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "vote" %}', // URL where the form data will be sent
+                    url: '{% url "vote" %}', // Ensure this URL matches your URL pattern
                     data: $(this).serialize(), // Serialize form data
                     success: function(response) {
-                        if (response.status === 'success') {
-                            alert(response.message);
-                            // Optionally, you can refresh part of the page or update the content
-                            // For example, you can reload the list of votes or refresh the entire page
-                            location.reload(); // Reload the page to reflect any changes
-                        } else {
-                            alert(response.message);
-                        }
+                        alert('Ovoz muvaffaqiyatli saqlandi.');
+                        location.reload(); // Reload the page to reflect any changes
                     },
                     error: function() {
                         alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
@@ -119,5 +112,6 @@
             });
         });
     </script>
+    
 </body>
 </html>

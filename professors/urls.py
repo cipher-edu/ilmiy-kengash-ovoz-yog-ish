@@ -19,6 +19,7 @@ urlpatterns = [
     path('list2/', tanlov_list2, name='tanlov_list2'),
     path('vote2/', vote2, name='vote2'), 
     path('success/', vote_success, name='vote_success'),
+    path('results/', vote_results, name='vote_results'),
 ]
 
 if settings.DEBUG:

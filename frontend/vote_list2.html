@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
@@ -30,43 +29,43 @@
                     <div class="white-box">
                         <center>
                             <span style="font-weight: bold; color: #000;">
-                                Navoiy davlat pedagogika instituti Kengashining 2024 yil mart oyidagi 9-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
+                                Navoiy davlat pedagogika instituti Kengashining 2024 yil fevral oyidagi 8-son yig‘ilishida O‘zbekiston Respublikasi Oliy ta’lim, fan va innovatsiyalar vazirligi huzuridagi Oliy attestatsiya komissiyasiga ilmiy unvonga tavsiya etish
                             </span>
                             <br>
                             <span style="font-weight: bold; color: #000;">
                                 BYULLETENI
                             </span>
                         </center>
-                        <form id="vote-form">
+                        <form id="vote-form" method="post" action="{% url 'vote2' %}">
                             {% csrf_token %}
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
                                             <th class="border-top-0">Ism Familiya</th>
+                                            <th class="border-top-0">Kafedra nomi</th>
                                             <th class="border-top-0">Ilmiy unvon</th>
                                             <th class="border-top-0">Ilmiy unvon shifri va ixtisosligi</th>
-                                            <th>Kafedra</th>
                                             <th class="border-top-0">Tanlov</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for unvon in ilmiy_unvons %}
+                                        {% for unvon in unvons %}
                                             <tr>
                                                 <td>{{ unvon.name }}</td>
+                                                <td>{{ unvon.kaf }}</td>
                                                 <td>{{ unvon.unvon }}</td>
                                                 <td>{{ unvon.unvon_shifr }}</td>
-                                                <td>{{  unvon.kaf }}</td>
                                                 <td>
                                                     {% if unvon.id in voted_unvons %}
                                                         <p style="color: green; font-weight: bold;">Muvofaqiyatli ovoz berilgan.</p>
                                                     {% else %}
                                                         <input type="hidden" name="unvon_ids" value="{{ unvon.id }}">
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="Xa" id="yes_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="Xa" id="yes_{{ unvon.id }}">
                                                         <label for="yes_{{ unvon.id }}">Xa</label><br>
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="yoq" id="no_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="yoq" id="no_{{ unvon.id }}">
                                                         <label for="no_{{ unvon.id }}">Yoq</label><br>
-                                                        <input type="radio" name="votes_{{ unvon.id }}" value="betaraf" id="neutral_{{ unvon.id }}">
+                                                        <input type="radio" name="vote_{{ unvon.id }}" value="betaraf" id="neutral_{{ unvon.id }}">
                                                         <label for="neutral_{{ unvon.id }}">Betaraf</label>
                                                     {% endif %}
                                                 </td>
@@ -97,7 +96,7 @@
         $(document).ready(function(){
             $('#vote-form').submit(function(event) {
                 event.preventDefault(); // Prevent the form from submitting the traditional way
-    
+
                 $.ajax({
                     type: 'POST',
                     url: '{% url "vote2" %}', // Ensure this URL matches your URL pattern
@@ -117,6 +116,5 @@
             });
         });
     </script>
-    
 </body>
 </html>
