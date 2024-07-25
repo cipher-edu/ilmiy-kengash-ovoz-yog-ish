@@ -73,7 +73,7 @@ def vote2(request):
 
         # Collect vote data
         for unvon_id in request.POST.getlist('unvon_ids'):
-            vote_value = request.POST.get(f'votes_{unvon_id}')
+            vote_value = request.POST.get(f'vote_{unvon_id}')
             if vote_value:
                 vote_data[unvon_id] = vote_value
 
@@ -104,81 +104,37 @@ def vote2(request):
 
 
 
+
 #statstic
-@login_required
-def vote_results(request):
-    # Aggregate votes for each Tanlov entry
-    results = Tanlov.objects.annotate(
-        xa_count=Count('vote', filter=Q(vote__ovoz='Xa')),
-        yoq_count=Count('vote', filter=Q(vote__ovoz='yoq')),
-        betaraf_count=Count('vote', filter=Q(vote__ovoz='betaraf'))
-    )
-    
-    results2 = Tanlov.objects.annotate(
-            xa_count=Count('vote', filter=Q(vote__ovoz='Xa')),
-            yoq_count=Count('vote', filter=Q(vote__ovoz='yoq')),
-            betaraf_count=Count('vote', filter=Q(vote__ovoz='betaraf'))
-        )
-    ctx = {
-         'results': results,
-         'results2': results2
-    }
-    return render(request, 'vote_results.html', {'results': results}, {'results2': results2})
-
-@login_required
-def vote_success(request):
-    return render(request, 'vote_success.html')
-
-
-
-
-class VoteStatisticsView(View):
-    def get(self, request):
-        titles = IlmiyUnvon.objects.all()
-        vote_counts = {}
-        for title in titles:
-            title_votes = Vote.objects.filter(ilmiy_unvon=title)
-            vote_counts[title] = {
-                'xa': title_votes.filter(ovoz='Xa').count(),
-                'yoq': title_votes.filter(ovoz='yoq').count(),
-                'betaraf': title_votes.filter(ovoz='betaraf').count()
-            }
-        total_votes = Vote.objects.count()
-        context = {
-            'vote_counts': vote_counts,
-            'total_votes': total_votes,
-            'titles': titles
+def vote_counts(request):
+    ilmiy_votes = []
+    for ilmiy in IlmiyUnvon.objects.all():
+        votes = {
+            'kengash': ilmiy.kengash.name,  # Include kengash name
+            'name': ilmiy.name,
+            'Xa': Vote2.objects.filter(ilmiy=ilmiy, ovoz='Xa').count(),
+            'Yoq': Vote2.objects.filter(ilmiy=ilmiy, ovoz='yoq').count(),
+            'Betaraf': Vote2.objects.filter(ilmiy=ilmiy, ovoz='betaraf').count(),
         }
-        return render(request, 'vote_natija.html', context)
-
-def vote_statistics(request):
-    ilmiy_unvon_list = IlmiyUnvon.objects.all()
-    vote_counts = {}
-    total_votes = Vote.objects.count()
-    selected_votes = Vote.objects.filter(ovoz__in=['Xa', 'yoq', 'betaraf']).count()
+        ilmiy_votes.append(votes)
     
-    for ilmiy_unvon in ilmiy_unvon_list:
-        vote_counts[ilmiy_unvon] = ilmiy_unvon.count_votes_by_title()
+    tanlov_votes = []
+    for tanlov in Tanlov.objects.all():
+        votes = {
+            'name': tanlov.name,
+            'Xa': Vote.objects.filter(tanlov=tanlov, ovoz='Xa').count(),
+            'Yoq': Vote.objects.filter(tanlov=tanlov, ovoz='yoq').count(),
+            'Betaraf': Vote.objects.filter(tanlov=tanlov, ovoz='betaraf').count(),
+        }
+        tanlov_votes.append(votes)
+    
+    context = {
+        'ilmiy_votes': ilmiy_votes,
+        'tanlov_votes': tanlov_votes,
+    }
+    
+    return render(request, 'vote_results.html', context)
 
-    return render(request, 'vote_natija.html', {
-        'vote_counts': vote_counts,
-        'total_votes': total_votes,
-        'selected_votes': selected_votes
-    })
-
-class VoteCreateView(CreateView):
-    model = Vote
-    form_class = VoteForm
-    template_name = 'vote_create.html'
-
-class VoteUpdateView(UpdateView):
-    model = Vote
-    form_class = VoteForm
-    template_name = 'vote_update.html'
-
-class VoteDetailView(DetailView):
-    model = Vote
-    template_name = 'vote_detail.html'
 
 @login_required
 def home(request):

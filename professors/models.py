@@ -66,9 +66,15 @@ tanlovcha = (
     ("kafedra katta o‘qituvchisi","kafedra katta o‘qituvchisi"), 
     ("kafedra o‘qituvchisi lavozimi","kafedra o‘qituvchisi lavozimi")
 )
+class Kengash(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Blyuten nomi')
+
+    def __str__(self):
+        return self.name
 
 # IlmiyUnvon modeli
 class IlmiyUnvon(models.Model):
+    kengash = models.ForeignKey(Kengash, on_delete=models.CASCADE, verbose_name="Kengash nomi")
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
     unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
     unvon_shifr = models.CharField(max_length=255, verbose_name='Ilmiy Unvon Shifri')
@@ -83,6 +89,7 @@ class IlmiyUnvon(models.Model):
 
 # Tanlov modeli
 class Tanlov(models.Model):
+    kengash = models.ForeignKey(Kengash, on_delete=models.CASCADE, verbose_name="Kengash nomi")
     name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
     kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
     scientific_title = models.CharField(max_length=255, choices=tanlovcha, verbose_name="Lavozimni tanlang")
@@ -105,7 +112,7 @@ class Vote(models.Model):
 
     class Meta:
         verbose_name = "Ovoz Berish"
-        verbose_name_plural = "Ovoz Berishlar"
+        verbose_name_plural = "Lavozimga ovoz berishlar"
 
 class Vote2(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -117,7 +124,7 @@ class Vote2(models.Model):
 
     class Meta:
         verbose_name = "Ovoz Berish"
-        verbose_name_plural = "Ovoz Berishlar"
+        verbose_name_plural = "Ilmiy kengash ovozlari"
 
 
     # unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')

@@ -2,10 +2,10 @@ from django.contrib import admin
 from .models import *       
 
 
-@admin.register(IlmiyUnvon)
-class IlmiyUnvonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'unvon', 'unvon_shifr', 'kaf')
-    search_fields = ('name', 'unvon', 'unvon_shifr', 'kaf')
+# @admin.register(IlmiyUnvon)
+# class IlmiyUnvonAdmin(admin.ModelAdmin):
+#     list_display = ('name', 'unvon', 'unvon_shifr', 'kaf')
+#     search_fields = ('name', 'unvon', 'unvon_shifr', 'kaf')
 
 @admin.register(Tanlov)
 class TanlovAdmin(admin.ModelAdmin):
@@ -21,3 +21,12 @@ class VoteAdmin(admin.ModelAdmin):
 class VoteAdmin(admin.ModelAdmin):
     list_display = ('ilmiy',  'ovoz')
     search_fields = ('ilmiy__name',  'ovoz')
+@admin.register(IlmiyUnvon)
+class IlmiyUnvonAdmin(admin.ModelAdmin):
+    list_display = ('kengash', 'name', 'unvon', 'unvon_shifr')
+    search_fields = ('kengash__name', 'name', 'unvon', 'unvon_shifr')
+    list_filter = ('kengash', 'unvon', 'unvon_shifr')
+
+@admin.register(Kengash)
+class AdminKengash(admin.ModelAdmin):
+    list_display = ('name',)

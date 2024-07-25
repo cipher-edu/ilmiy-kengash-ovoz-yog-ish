@@ -42,20 +42,20 @@
                                 <table class="table text-nowrap">
                                     <thead>
                                         <tr>
+                                            <th>Kengash nomi</th>
                                             <th class="border-top-0">Ism Familiya</th>
                                             <th class="border-top-0">Kafedra nomi</th>
-                                            <th class="border-top-0">Ilmiy unvon</th>
-                                            <th class="border-top-0">Ilmiy unvon shifri va ixtisosligi</th>
+                                            <th class="border-top-0">Lavozim</th>
                                             <th class="border-top-0">Tanlov</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for unvon in unvons %}
                                             <tr>
+                                                <td> {{ unvon.kengash }} </td>
                                                 <td>{{ unvon.name }}</td>
                                                 <td>{{ unvon.kaf }}</td>
-                                                <td>{{ unvon.unvon }}</td>
-                                                <td>{{ unvon.unvon_shifr }}</td>
+                                                <td>{{ unvon.scientific_title }}</td>
                                                 <td>
                                                     {% if unvon.id in voted_unvons %}
                                                         <p style="color: green; font-weight: bold;">Muvofaqiyatli ovoz berilgan.</p>
@@ -102,8 +102,10 @@
                     url: '{% url "vote" %}', // Ensure this URL matches your URL pattern
                     data: $(this).serialize(), // Serialize form data
                     success: function(response) {
-                        alert('Ovoz muvaffaqiyatli saqlandi.');
-                        location.reload(); // Reload the page to reflect any changes
+                        alert(response.message);
+                        if (response.status === 'success') {
+                            location.reload(); // Reload the page to reflect any changes
+                        }
                     },
                     error: function() {
                         alert('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
@@ -112,6 +114,5 @@
             });
         });
     </script>
-    
 </body>
 </html>

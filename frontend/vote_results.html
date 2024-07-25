@@ -1,8 +1,6 @@
-
-<!DOCTYPE html>
-
 {% load static %}
 
+<!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
     <meta charset="utf-8">
@@ -22,69 +20,59 @@
         {% include 'base/navbar.html' %}
         <div class="page-wrapper">
             <div class="row">
+                <!-- Tanlov Voting Results -->
                 <div class="col-sm-12">
                     <div class="white-box">
-                        <h3 class="box-title">Voting Results for Tanlov</h3>
+                        <h3 class="box-title">Tanlov natijalari</h3>
                         <div class="table-responsive">
                             <table class="table text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Ism Familiya</th>
-                                        <th>Kafedra nomi</th>
-                                        <th>Xo</th>
-                                        <th>Yoq</th>
-                                        <th>Betaraf</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for tanlov in results %}
-                                        <tr>
-                                            <td>{{ tanlov.id }}</td>
-                                            <td>{{ tanlov.name }}</td>
-                                            <td>{{ tanlov.kaf }}</td>
-                                            <td>{{ tanlov.xa_count }}</td>
-                                            <td>{{ tanlov.yoq_count }}</td>
-                                            <td>{{ tanlov.betaraf_count }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+            <thead>
+                <tr>
+                    <th>Tanlov</th>
+                    <th>Xa</th>
+                    <th>Yoq</th>
+                    <th>Betaraf</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tanlov in tanlov_votes %}
+                <tr>
+                    <td>{{ tanlov.name }}</td>
+                    <td style="color: green; font-weight: bold;">{{ tanlov.Xa }}</td>
+                    <td style="color: red; font-weight: bold;">{{ tanlov.Yoq }}</td>
+                    <td style="color: black; font-weight: bold;">{{ tanlov.Betaraf }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
+                <!-- IlmiyUnvon Voting Results -->
                 <div class="col-sm-12">
                     <div class="white-box">
-                        <h3 class="box-title">Voting Results for IlmiyUnvon</h3>
+                        <h3 class="box-title">Ilmiy unvon natijalari</h3>
                         <div class="table-responsive">
                             <table class="table text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Ism Familiya</th>
-                                        <th>Ilmiy Unvon</th>
-                                        <th>Ilmiy Unvon Shifri</th>
-                                        <th>Kafedra nomi</th>
-                                        <th>Xo</th>
-                                        <th>Yoq</th>
-                                        <th>Betaraf</th>
+                                        <th>Kengash nomi</th>
+                                        <th class="border-top-0">Ism Familiya</th>
+                                        <th class="border-top-0">Xa</th>
+                                        <th class="border-top-0">Yoq</th>
+                                        <th class="border-top-0">Betaraf</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for ilmiyunvon in results2 %}
-                                        <tr>
-                                            <td>{{ ilmiyunvon.id }}</td>
-                                            <td>{{ ilmiyunvon.name }}</td>
-                                            <td>{{ ilmiyunvon.unvon }}</td>
-                                            <td>{{ ilmiyunvon.unvon_shifr }}</td>
-                                            <td>{{ ilmiyunvon.kaf }}</td>
-                                            <td>{{ ilmiyunvon.xa_count }}</td>
-                                            <td>{{ ilmiyunvon.yoq_count }}</td>
-                                            <td>{{ ilmiyunvon.betaraf_count }}</td>
-                                        </tr>
+                                    {% for ilmiy in ilmiy_votes %}
+                                    <tr>
+                                        <td>{{ ilmiy.kengash }}</td>
+                                        <td >{{ ilmiy.name }}</td>
+                                        <td style="color: green; font-weight: bold;">{{ ilmiy.Xa }}</td>
+                                        <td style="color: red; font-weight: bold;">{{ ilmiy.Yoq }}</td>
+                                        <td style="color: black; font-weight: bold;"> {{ ilmiy.Betaraf }}</td>
+                                    </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>

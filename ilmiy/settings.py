@@ -236,7 +236,9 @@ JAZZMIN_SETTINGS = {
         "auth.Group": "fas fa-users",
         "professors.UserCreate": "fas fa-users",
         "professors.IlmiyUnvon":"fas fa-address-card",
-        "professors.Vote":"fas fa-chart-line"
+        "professors.Vote":"fas fa-chart-line",
+        "professors.Tanlov":"fas fa-address-card",
+        "professors.Vote2":"fas fa-chart-line",
 
     },
     # Icons that are used when one is not manually specified
