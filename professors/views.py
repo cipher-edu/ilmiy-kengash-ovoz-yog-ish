@@ -138,9 +138,15 @@ def vote_counts(request):
 
 @login_required
 def home(request):
+    kengash = Kengash.objects.count()
     votes = Vote.objects.all()
+    vote_count = Vote.objects.count()
+    vote2_count = Vote2.objects.count()
+    total_vote_count = vote_count + vote2_count
     context = {
-        'votes': votes
+        'votes': votes,
+        'kengash':kengash,
+        'total_vote_count':total_vote_count
     }
     return render(request, 'index.html', context)
 
