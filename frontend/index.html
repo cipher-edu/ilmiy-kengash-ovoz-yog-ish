@@ -1,133 +1,43 @@
-{% load static %}
-<!DOCTYPE html>
-<html dir="ltr" lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords"
-        content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template">
-    <meta name="description"
-        content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework">
-    <meta name="robots" content="noindex,nofollow">
-    <title>Kengash ovoz yig'ish created By CIPHER-EDU</title>
-    <link rel="canonical" href="https://www.wrappixel.com/templates/ample-admin-lite/" />
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plugins/images/favicon.png' %}">
-    <!-- Custom CSS -->
-    <link href="{% static 'plugins/bower_components/chartist/dist/chartist.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css' %}">
-    <!-- Custom CSS -->
-    
-    <link href="{% static 'css/style.min.css' %}" rel="stylesheet">
-</head>
+{% block title %}Bosh Sahifa{% endblock %}
 
-<body>
-    <div class="preloader">
-        <div class="lds-ripple">
-            <div class="lds-pos"></div>
-            <div class="lds-pos"></div>
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Ovoz Berish Tizimiga Xush Kelibsiz!</h1>
+        <p class="col-md-8 fs-4">Bu tizim professor-o'qituvchilar uchun lavozim va ilmiy unvonlarga shaffof va xavfsiz ovoz berish imkonini beradi.</p>
+        <a href="{% url 'byulleten_list' %}" class="btn btn-primary btn-lg" type="button">Ovoz berishni boshlash</a>
+    </div>
+</div>
+
+<div class="row text-center">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="card-body">
+                <i class="bi bi-people-fill fs-1 text-primary"></i>
+                <h3 class="card-title mt-2">{{ user_count }}</h3>
+                <p class="card-text">Ro'yxatdan o'tganlar</p>
+            </div>
         </div>
     </div>
-    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
-        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
-       {% include 'base/navbar.html' %}
-        <div class="page-wrapper">
-            <div class="page-breadcrumb bg-white">
-                <div class="row align-items-center">
-                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">Dastur test rejimida</h4>
-                    </div>
-                </div>
-                <!-- /.col-lg-12 -->
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="card-body">
+                <i class="bi bi-building-fill-check fs-1 text-success"></i>
+                <h3 class="card-title mt-2">{{ council_count }}</h3>
+                <p class="card-text">Faol Kengashlar</p>
             </div>
-            <div class="container-fluid">
-                <div class="row justify-content-center">
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Umumiy foydalanuvchilar</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-success">65</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Barcha kengashlar</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash2"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-purple">{{kengash}}</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Umumiy ovozlar</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash3"><canvas width="67" height="30"
-                                            style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-info">{{total_vote_count}}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                        <div class="white-box">
-                            <h3 class="box-title">ovozlar statistikasi</h3>
-                            <div class="d-md-flex">
-                                <ul class="list-inline d-flex ms-auto">
-                                    <li class="ps-3">
-                                        <h5><i class="fa fa-circle me-1 text-info"></i>Xa</h5>
-                                    </li>
-                                    <li class="ps-3">
-                                        <h5><i class="fa fa-circle me-1 text-inverse"></i>Yoq</h5>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div id="ct-visits" style="height: 405px;">
-                                <div class="chartist-tooltip" style="top: -17px; left: -12px;"><span
-                                        class="chartist-tooltip-value">6</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% include 'base/footer.html' %}
         </div>
     </div>
-    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
-    <!-- Bootstrap tether Core JavaScript -->
-    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/app-style-switcher.js' %}"></script>
-    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
-    <!--Wave Effects -->
-    <script src="{% static 'js/waves.js' %}"></script>
-    <!--Menu sidebar -->
-    <script src="{% static 'js/sidebarmenu.js' %}"></script>
-    <!--Custom JavaScript -->
-    <script src="{% static 'js/custom.js' %}"></script>
-    <!--This page JavaScript -->
-    <!--chartis chart-->
-    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
-    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
-    <script src="{% static 'js/pages/dashboards/dashboard1.js' %}"></script>
-</body>
-
-</html>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="card-body">
+                <i class="bi bi-box2-heart-fill fs-1 text-info"></i>
+                <h3 class="card-title mt-2">{{ total_votes }}</h3>
+                <p class="card-text">Jami Ovozlar</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

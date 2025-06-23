@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Ovoz Berish Natijalari{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Ovoz Berish Natijalari</h1>
+    <p class="lead text-muted">Umumiy statistika va batafsil jadvallar</p>
+</div>
+
+<!-- ================================== -->
+<!--  DIAGRAMMALAR UCHUN BLOK           -->
+<!-- ================================== -->
+<div class="row mb-5 g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 pt-3">
+                <h5 class="card-title text-center">Umumiy Ovozlar Nisbati</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <div id="pie-chart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 pt-3">
+                <h5 class="card-title text-center">Lavozimlar Bo'yicha Ovozlar</h5>
+            </div>
+            <div class="card-body">
+                <div id="bar-chart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ================================== -->
+<!--  JADVALLAR UCHUN BLOK             -->
+<!-- ================================== -->
+
+<!-- 1. Lavozim Natijalari Jadvali -->
+{% if position_votes %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-person-badge-fill me-2 text-primary"></i> Lavozim Tanlovlari Natijalari</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Nomzod</th>
+                        <th>Lavozim</th>
+                        <th class="text-center">Ha</th>
+                        <th class="text-center">Yo'q</th>
+                        <th class="text-center">Betaraf</th>
+                        <th class="text-center pe-3">Jami</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vote in position_votes %}
+                        <tr>
+                            <td class="ps-3">{{ vote.candidate_name }}</td>
+                            <td>{{ vote.lavozim.name }}</td>
+                            <td class="text-center text-success fw-bold">{{ vote.ha_count }}</td>
+                            <td class="text-center text-danger fw-bold">{{ vote.yoq_count }}</td>
+                            <td class="text-center text-secondary fw-bold">{{ vote.betaraf_count }}</td>
+                            <td class="text-center fw-bold pe-3">{{ vote.ha_count|add:vote.yoq_count|add:vote.betaraf_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 2. Ilmiy Unvon Natijalari Jadvali -->
+{% if title_votes %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-award-fill me-2 text-success"></i> Ilmiy Unvonlar Natijalari</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Nomzod</th>
+                        <th>Unvon</th>
+                        <th class="text-center">Ha</th>
+                        <th class="text-center">Yo'q</th>
+                        <th class="text-center">Betaraf</th>
+                        <th class="text-center pe-3">Jami</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vote in title_votes %}
+                         <tr>
+                            <td class="ps-3">{{ vote.candidate_name }}</td>
+                            <td>{{ vote.title }}</td>
+                            <td class="text-center text-success fw-bold">{{ vote.ha_count }}</td>
+                            <td class="text-center text-danger fw-bold">{{ vote.yoq_count }}</td>
+                            <td class="text-center text-secondary fw-bold">{{ vote.betaraf_count }}</td>
+                            <td class="text-center fw-bold pe-3">{{ vote.ha_count|add:vote.yoq_count|add:vote.betaraf_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 3. Boshqa Masalalar Natijalari Jadvali -->
+{% if other_issue_votes %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-journal-check me-2 text-info"></i> Boshqa Masalalar Natijalari</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50%;" class="ps-3">Masala Sarlavhasi</th>
+                        <th class="text-center">Ha</th>
+                        <th class="text-center">Yo'q</th>
+                        <th class="text-center">Betaraf</th>
+                        <th class="text-center pe-3">Jami</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vote in other_issue_votes %}
+                        <tr>
+                            <td class="ps-3">
+                                <p class="fw-bold mb-1">{{ vote.title }}</p>
+                                {% if vote.description %}
+                                <small class="text-muted">{{ vote.description|truncatewords:20 }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-center text-success fw-bold">{{ vote.ha_count }}</td>
+                            <td class="text-center text-danger fw-bold">{{ vote.yoq_count }}</td>
+                            <td class="text-center text-secondary fw-bold">{{ vote.betaraf_count }}</td>
+                            <td class="text-center fw-bold pe-3">{{ vote.ha_count|add:vote.yoq_count|add:vote.betaraf_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Agar umuman natija bo'lmasa ko'rsatiladigan blok -->
+{% if not position_votes and not title_votes and not other_issue_votes %}
+    <div class="card">
+        <div class="card-body text-center p-5">
+            <i class="bi bi-bar-chart-line-fill display-4 text-muted"></i>
+            <h4 class="mt-3">Natijalar hozircha mavjud emas</h4>
+            <p class="text-muted">Hech qanday masala bo'yicha ovoz berilmagan.</p>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<!-- ApexCharts.js kutubxonasini qo'shamiz -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 1. Pie Chart (Umumiy ovozlar) ---
+    try {
+        const pieChartData = JSON.parse('{{ pie_chart_data|escapejs }}');
+        if (pieChartData && pieChartData.series.some(s => s > 0)) {
+            var pieOptions = {
+                series: pieChartData.series,
+                chart: { type: 'donut', height: 320 },
+                labels: pieChartData.labels,
+                colors: ['#198754', '#dc3545', '#6c757d'],
+                legend: { position: 'bottom' },
+                tooltip: { y: { formatter: (val) => val + " ta ovoz" } }
+            };
+            var pieChart = new ApexCharts(document.querySelector("#pie-chart"), pieOptions);
+            pieChart.render();
+        } else {
+            document.querySelector("#pie-chart").innerHTML = '<p class="text-center text-muted m-auto">Ma\'lumotlar mavjud emas</p>';
+        }
+    } catch (e) {
+        console.error("Pie chart uchun ma'lumotlarni o'qishda xatolik:", e);
+        document.querySelector("#pie-chart").innerHTML = '<p class="text-center text-danger m-auto">Diagrammani yuklab bo‘lmadi</p>';
+    }
+
+    // --- 2. Bar Chart (Lavozimlar bo'yicha) ---
+    try {
+        const barChartData = JSON.parse('{{ bar_chart_data|escapejs }}');
+        if (barChartData && barChartData.categories.length > 0) {
+            var barOptions = {
+                series: barChartData.series,
+                chart: { type: 'bar', height: 320, stacked: true, toolbar: { show: false } },
+                plotOptions: { bar: { horizontal: false, borderRadius: 5 } },
+                xaxis: { categories: barChartData.categories },
+                legend: { position: 'top' },
+                fill: { opacity: 1 },
+                colors: ['#198754', '#dc3545', '#6c757d'],
+                tooltip: { y: { formatter: (val) => val + " ta" } }
+            };
+            var barChart = new ApexCharts(document.querySelector("#bar-chart"), barOptions);
+            barChart.render();
+        } else {
+            document.querySelector("#bar-chart").innerHTML = '<p class="text-center text-muted m-auto">Ma\'lumotlar mavjud emas</p>';
+        }
+    } catch(e) {
+        console.error("Bar chart uchun ma'lumotlarni o'qishda xatolik:", e);
+        document.querySelector("#bar-chart").innerHTML = '<p class="text-center text-danger m-auto">Diagrammani yuklab bo‘lmadi</p>';
+    }
+});
+</script>
+{% endblock %}

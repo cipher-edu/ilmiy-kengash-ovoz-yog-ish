@@ -1,46 +1,42 @@
+# apps/forms.py
+
 from django import forms
-from .models import *
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from .models import UserProfile, Kafedra
 
-class UserAdditionalInfoForm(forms.ModelForm):
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email')
+
+class UserProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=100, required=True, label="Ism")
+    last_name = forms.CharField(max_length=100, required=True, label="Familiya")
+    
     class Meta:
-        model = UserCreate
-        fields = ['name', 'lastname', 'surname', 'kaf', 'ilimiy_darajasi', 'user_lavozimi', 'tel', 'image', 'mail']
-        widgets = {
-            'name': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'lastname': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}), 
-            'surname': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'kaf': forms.Select(attrs={'class':'form-control col-md-6 mb-6'}),
-            'ilimiy_darajasi': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'user_lavozimi': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'tel': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'image': forms.FileInput(attrs={'class':'form-control'}),
-            'about': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
-            'telegram': forms.TextInput(attrs={'class':'form-control col-md-12 mb-6'}),
-            'mail': forms.TextInput(attrs={'class':'form-control col-md-6 mb-6'}),
+        model = UserProfile
+        fields = ['first_name', 'last_name', 'surname', 'kafedra', 'academic_degree', 'position', 'phone_number', 'image']
+        labels = {
+            'surname': "Otasining ismi", 'kafedra': "Kafedrasi",
+            'academic_degree': "Ilmiy darajasi", 'position': "Lavozimi",
+            'phone_number': "Telefon raqami", 'image': "Profil rasmi",
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.user:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+        self.fields['kafedra'].queryset = Kafedra.objects.all()
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        user = profile.user
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         
-class TanlovForm(forms.ModelForm):
-    class Meta:
-        model = Tanlov
-        fields = ['name', 'kaf', 'scientific_title']
-        widgets = {
-            'name': forms.TextInput(attrs={'class':'form-control'}),
-            'kaf': forms.Select(attrs={'class':'form-control'}),
-            'scientific_title': forms.Select(attrs={'class':'form-control'}),
-        }
-
-class VoteForm(forms.ModelForm):
-    class Meta:
-        model = Vote
-        fields = ['ovoz']
-        widgets = {
-            'ovoz': forms.RadioSelect(choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')])
-        }
-
-class VoteForm(forms.ModelForm):
-    class Meta:
-        model = Vote2
-        fields = ['ovoz']
-        widgets = {
-            'ovoz': forms.RadioSelect(choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')])
-        }
+        if commit:
+            user.save()
+            profile.save()
+        return profile

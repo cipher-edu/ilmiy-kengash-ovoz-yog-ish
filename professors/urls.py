@@ -1,21 +1,41 @@
+# professors/urls.py
+
 from django.urls import path
-from .views import *
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib.auth.views import LoginView, LogoutView
+from . import views
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('signup/', SingUpView.as_view(), name='signup'),
-    path('user-info/', user_info_form, name='user_info'),
-    path('list/', tanlov_list, name='tanlov_list'),
-    path('vote/', vote, name='vote'),  # Ensure this is the correct path
-    path('list2/', tanlov_list2, name='tanlov_list2'),
-    path('vote2/', vote2, name='vote2'), 
-    path('results/', vote_counts, name='vote_results'),
-]
+    # ==================================
+    # Asosiy va Boshqaruv sahifalari
+    # ==================================
+    path('', views.home, name='home'),
+    
+    # ==================================
+    # Autentifikatsiya va Profil
+    # ==================================
+    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('profile/', views.UserProfileUpdateView.as_view(), name='profile_update'),
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # ==================================
+    # Ovoz Berish Jarayoni
+    # ==================================
+    # Barcha aktiv byulletenlar ro'yxati (ovoz berish uchun)
+    path('ballots/', views.ByulletenListView.as_view(), name='byulleten_list'),
+    
+    # Bitta byulleten uchun ovoz berish sahifasi
+    path('ballots/<int:pk>/', views.ByulletenDetailView.as_view(), name='byulleten_detail'),
+
+    # Ovozlarni yuborish uchun yagona AJAX endpoint
+    path('vote/submit/', views.submit_votes, name='submit_votes'), 
+    
+    # ==================================
+    # Natijalarni ko'rish
+    # ==================================
+    # Barcha byulletenlar ro'yxatini ko'rsatuvchi sahifa (natijalarni tanlash uchun)
+    path('results/', views.BallotResultsListView.as_view(), name='results_list'),
+    
+    # Tanlangan byulletenning natijalarini ko'rsatuvchi sahifa
+    path('results/<int:pk>/', views.BallotResultsDetailView.as_view(), name='results_detail'),
+]

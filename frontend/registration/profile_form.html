@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Profilni Tahrirlash{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">Profil Ma'lumotlari</h2>
+                
+                <!-- Profil rasmi ko'rsatish -->
+                {% if form.instance.image and form.instance.image.url %}
+                    <div class="text-center mb-4">
+                        <img src="{{ form.instance.image.url }}" alt="Profil rasmi" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #dee2e6;">
+                        <p class="text-muted mt-2">Joriy rasm</p>
+                    </div>
+                {% else %}
+                    <div class="text-center mb-4">
+                        <img src="/static/img/default-avatar.png" alt="Profil rasmi" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #dee2e6; opacity:0.5;">
+                        <p class="text-muted mt-2">Rasm tanlanmagan</p>
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.last_name.label }}</label>
+                            {% render_field form.last_name class="form-control" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.first_name.label }}</label>
+                            {% render_field form.first_name class="form-control" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.surname.label }}</label>
+                            {% render_field form.surname class="form-control" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                             <label class="form-label">{{ form.kafedra.label }}</label>
+                            {% render_field form.kafedra class="form-select" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                             <label class="form-label">{{ form.academic_degree.label }}</label>
+                            {% render_field form.academic_degree class="form-control" %}
+                        </div>
+                         <div class="col-md-6 mb-3">
+                             <label class="form-label">{{ form.position.label }}</label>
+                            {% render_field form.position class="form-control" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                             <label class="form-label">{{ form.phone_number.label }}</label>
+                            {% render_field form.phone_number class="form-control" %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.image.label }}</label>
+                            {% if form.instance.image %}
+                                <p class="text-muted">Joriy rasm: <a href="{{ form.instance.image.url }}">{{ form.instance.image.name|truncatechars:20 }}</a></p>
+                            {% endif %}
+                            {% render_field form.image class="form-control" %}
+                        </div>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success">Saqlash</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

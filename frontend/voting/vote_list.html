@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Natijalar bo'yicha Byulletenlar{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Natijalarni ko'rish</h1>
+    <p class="lead text-muted">Iltimos, natijalarini ko'rmoqchi bo'lgan yig'ilishni (byulletenni) tanlang.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Byulletenlar ro'yxati</h5>
+            </div>
+            <div class="card-body">
+                {% if byulletenlar %}
+                    <div class="list-group">
+                        {% for byulleten in byulletenlar %}
+                            <a href="{% url 'results_detail' byulleten.pk %}" class="list-group-item list-group-item-action p-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ byulleten.title }}</h5>
+                                    <small class="text-muted">{{ byulleten.created_at|date:"d.m.Y" }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">
+                                    <strong>Kengash:</strong> {{ byulleten.kengash.name }}
+                                </p>
+                                <div class="d-flex align-items-center justify-content-end mt-2">
+                                    <span class="btn btn-outline-primary btn-sm">
+                                        Natijalarni ko'rish <i class="bi bi-bar-chart-line-fill"></i>
+                                    </span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center p-5">
+                        <h4 class="mt-3">Natijalar topilmadi</h4>
+                        <p class="text-muted">Hozircha hech qanday byulleten bo'yicha ovoz berilmagan.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

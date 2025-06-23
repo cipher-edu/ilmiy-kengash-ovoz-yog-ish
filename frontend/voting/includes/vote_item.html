@@ -1,0 +1,42 @@
+<!-- templates/voting/includes/vote_item.html -->
+{% load voting_tags %}
+
+{# Har bir element orasiga chiziq qo'shish (birinchisidan tashqari) #}
+<div class="p-3 {% if not forloop.first %}border-top{% endif %}">
+    <div class="row align-items-center">
+        <div class="col-md-5">
+            <h5 class="mb-1">{{ title }}</h5>
+            {% if subtitle %}
+            <p class="card-text text-muted mb-0">{{ subtitle }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-7 mt-3 mt-md-0">
+            
+            {% has_voted voted_items ctype_id obj_id as user_has_voted %}
+            
+            {% if user_has_voted %}
+                <div class="d-flex align-items-center justify-content-center bg-light-success p-2 rounded">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span class="text-success fw-bold">Ovoz berilgan</span>
+                </div>
+            {% else %}
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="vote_{{ ctype_id }}_{{ obj_id }}" id="ha_{{ ctype_id }}_{{ obj_id }}" value="ha" autocomplete="off" required>
+                    <label class="btn btn-outline-success py-2" for="ha_{{ ctype_id }}_{{ obj_id }}">
+                        <i class="bi bi-hand-thumbs-up-fill me-1"></i> Ha
+                    </label>
+
+                    <input type="radio" class="btn-check" name="vote_{{ ctype_id }}_{{ obj_id }}" id="yoq_{{ ctype_id }}_{{ obj_id }}" value="yoq" autocomplete="off" required>
+                    <label class="btn btn-outline-danger py-2" for="yoq_{{ ctype_id }}_{{ obj_id }}">
+                        <i class="bi bi-hand-thumbs-down-fill me-1"></i> Yo'q
+                    </label>
+
+                    <input type="radio" class="btn-check" name="vote_{{ ctype_id }}_{{ obj_id }}" id="betaraf_{{ ctype_id }}_{{ obj_id }}" value="betaraf" autocomplete="off" required>
+                    <label class="btn btn-outline-secondary py-2" for="betaraf_{{ ctype_id }}_{{ obj_id }}">
+                        <i class="bi bi-slash-circle-fill me-1"></i> Betaraf
+                    </label>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -147,13 +147,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS=[
-    BASE_DIR/ "static"
-]
-MEDIA_URL = 'media/'
-#server
-MEDIA_ROOT = '/media/'
+
+# Media files (User uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 JAZZMIN_SETTINGS = {
     "site_header": "CIPHER",
@@ -235,11 +234,19 @@ JAZZMIN_SETTINGS = {
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
         "professors.UserCreate": "fas fa-users",
-        "professors.IlmiyUnvon":"fas fa-address-card",
-        "professors.Vote":"fas fa-chart-line",
-        "professors.Tanlov":"fas fa-address-card",
-        "professors.Vote2":"fas fa-chart-line",
-
+        "professors.IlmiyUnvon": "fas fa-address-card",
+        "professors.Vote": "fas fa-chart-line",
+        "professors.Tanlov": "fas fa-address-card",
+        "professors.BoshqaMasala": "fas fa-tasks",
+        "professors.Byulleten": "fas fa-clipboard-list",
+        "professors.Kengash": "fas fa-users",
+        "professors.Lavozim": "fas fa-user-tie",
+        "professors.Kafedra": "fas fa-university",
+        "professors.UserProfile": "fas fa-id-badge",
+        "professors.Tanlov": "fas fa-address-card",
+        "professors.IlmiyUnvon": "fas fa-address-card",
+        "professors.BoshqaMasala": "fas fa-tasks",
+        "professors.Vote2": "fas fa-chart-line",
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",

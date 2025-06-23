@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Faol Ovoz Berishlar{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Faol Ovoz Berishlar (Byulletenlar)</h1>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if byulletenlar %}
+            <div class="list-group">
+                {% for byulleten in byulletenlar %}
+                    <a href="{% url 'byulleten_detail' byulleten.pk %}" class="list-group-item list-group-item-action p-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ byulleten.title }}</h5>
+                            <small class="text-muted">{{ byulleten.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                        <p class="mb-1 text-muted">
+                            <strong>Kengash:</strong> {{ byulleten.kengash.name }}
+                        </p>
+                        <div class="d-flex align-items-center justify-content-end mt-2">
+                            <span class="btn btn-primary btn-sm">
+                                Ovoz berishga o'tish <i class="bi bi-arrow-right-short"></i>
+                            </span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center p-5">
+                <i class="bi bi-info-circle-fill display-4 text-info"></i>
+                <h4 class="mt-3">Hozirda faol ovoz berishlar mavjud emas.</h4>
+                <p class="text-muted">Iltimos, keyinroq tekshirib ko'ring.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

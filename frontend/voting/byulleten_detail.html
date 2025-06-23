@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load voting_tags %}
+
+{% block title %}Ovoz berish: {{ byulleten.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Sahifa sarlavhasi (o'zgarishsiz) -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">{{ byulleten.title }}</h1>
+        <p class="lead text-muted">{{ byulleten.kengash.name }}</p>
+    </div>
+    <div id="alert-container" class="sticky-top" style="top: 80px; z-index: 1050;"></div>
+
+    <form id="voteForm">
+        {% csrf_token %}
+        
+        {# Bu yerda endi yangi context o'zgaruvchilarini ishlatamiz #}
+        {% if not saylovlar_list and not unvonlar_list and not boshqa_masalalar_list %}
+            <div class="card p-5 text-center">
+                <h4 class="mt-4">Masalalar topilmadi</h4>
+                <p class="text-muted">Ushbu byulletenga ovoz berish uchun hech qanday masala biriktirilmagan.</p>
+            </div>
+        {% else %}
+            <!-- 1. SAYLOVLAR UCHUN YANGI DIZAYN -->
+            {% if saylovlar_list %}
+                <div class="mb-5">
+                    <h3 class="mb-4 text-center fw-bold"><i class="bi bi-people-fill text-primary"></i> Lavozim uchun saylovlar</h3>
+                    {% for saylov in saylovlar_list %}
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-light py-3"><h5 class="mb-0 text-center">{{ saylov.title }}</h5></div>
+                            <div class="card-body p-4">
+                                {% if saylov.id in voted_saylov_ids %}
+                                    <div class="alert alert-success text-center"><i class="bi bi-check-circle-fill me-2"></i>Siz ushbu saylovda o'z tanlovingizni qildingiz.</div>
+                                {% else %}
+                                    <div class="row g-3 justify-content-center">
+                                        {% for nomzod in saylov.nomzodlar.all %}
+                                            <div class="col-md-6 col-lg-4">
+                                                <label for="nomzod_{{ nomzod.id }}" class="nomzod-card card h-100 text-center">
+                                                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                                                        <input type="radio" class="btn-check nomzod-radio" name="saylov_{{ saylov.id }}" id="nomzod_{{ nomzod.id }}" value="{{ nomzod.id }}" autocomplete="off" required>
+                                                       
+                                                        <h6 class="card-title fw-bold mb-1">{{ nomzod.candidate_name }}</h6>
+                                                        <p class="card-text text-muted small">{{ saylov.lavozim.name }} lavozimiga nomzod</p>
+                                                    </div>
+                                                    <div class="card-footer bg-transparent border-0 pb-3">
+                                                        <span class="btn btn-sm btn-outline-primary w-100 check-btn"><i class="bi bi-check-circle"></i> Tanlash</span>
+                                                        <span class="btn btn-sm btn-success w-100 checked-btn" style="display: none;"><i class="bi bi-check-circle-fill"></i> Tanlandi</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <small class="form-text text-muted mt-3 d-block text-center">Eslatma: Bu saylovda faqat bitta nomzodga ovoz bera olasiz.</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- 2. ILMIY UNVONLAR UCHUN BLOK -->
+            {% if unvonlar_list %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-award-fill me-2 text-success"></i> Ilmiy unvonlar</h5></div>
+                    <div class="card-body p-0">
+                        {% for unvon in unvonlar_list %}
+                            {% with ctype_id=content_types.ilmiyunvon obj_id=unvon.id %}
+                            {% include 'voting/includes/vote_item.html' with item=unvon title=unvon.candidate_name subtitle=unvon.title forloop=forloop %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- 3. BOSHQA MASALALAR UCHUN BLOK -->
+            {% if boshqa_masalalar_list %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light"><h5 class="mb-0"><i class="bi bi-journal-check me-2 text-info"></i> Boshqa masalalar</h5></div>
+                    <div class="card-body p-0">
+                        {% for masala in boshqa_masalalar_list %}
+                            {% with ctype_id=content_types.boshqamasala obj_id=masala.id %}
+                            {% include 'voting/includes/vote_item.html' with item=masala title=masala.title subtitle=masala.description|truncatewords:30|default_if_none:"" forloop=forloop %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">Barcha ovozlarni yuborish</button>
+            </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {# Bu blokdagi JS va CSS kodlari avvalgi javobdagi kabi qoladi #}
+    <script>
+        // Saylov kartochkalarini interaktiv qilish uchun JS
+        document.addEventListener('DOMContentLoaded', function() {
+            const saylovBlocks = document.querySelectorAll('.card-body');
+
+            saylovBlocks.forEach(block => {
+                const radios = block.querySelectorAll('.nomzod-radio');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const allCardsInBlock = block.querySelectorAll('.nomzod-card');
+                        allCardsInBlock.forEach(card => card.classList.remove('selected'));
+                        if (this.checked) {
+                            this.closest('.nomzod-card').classList.add('selected');
+                        }
+                    });
+                });
+            });
+
+            // AJAX so'rovi uchun JS (to'g'ri ishlashi uchun to'liq kod)
+            const form = document.getElementById('voteForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    fetch("{% url 'submit_votes' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const alertContainer = document.getElementById('alert-container');
+                        alertContainer.innerHTML = `<div class="alert alert-${data.status === 'success' ? 'success' : 'danger'} alert-dismissible fade show" role="alert">${data.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+                        if (data.status === 'success') {
+                            setTimeout(() => window.location.reload(), 1200);
+                        }
+                    })
+                    .catch(() => {
+                        const alertContainer = document.getElementById('alert-container');
+                        alertContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">Serverda xatolik!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,149 +1,137 @@
-from django.db import models
+# professors/models.py
+
 import uuid
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin, User
-from django.db.models import Count
-from collections import Counter
-# Create your models here.
-fakultets = [
-        ("Umumiy pedagogika va psixologiya","Umumiy pedagogika va psixologiya"),
-        ("Maktabgacha ta’lim", "Maktabgacha ta’lim"),
-        ("Boshlang‘ich ta’lim", "Boshlang‘ich ta’lim"),
-        ("Pedagogika va psixologiya", "Pedagogika va psixologiya"),
-        ("Musiqa ta’limi", "Musiqa ta’limi"),
-        ("Tasviriy san’at va muhandislik grafikasi", "Tasviriy san’at va muhandislik grafikasi"),
-        ("Biologiya", "Biologiya"),
-        ("Kimyo", "Kimyo"),
-        ("Geografiya va iqtisodiy bilim asoslari", "Geografiya va iqtisodiy bilim asoslari"),
-        ("Matematika", "Matematika"),
-        ("Informatika", "Informatika"),
-        ("Fizika va astronomiya", "Fizika va astronomiya"),
-        ("Texnologik ta’lim", "Texnologik ta’lim"),
-        ("O‘zbek tilshunosligi", "O‘zbek tilshunosligi"),
-        ("O‘zbek tili va adabiyoti", "O‘zbek tili va adabiyoti"),
-        ("Tarix", "Tarix"),
-        ("Milliy g‘oya, ma’naviyat asoslari va huquq ta’limi", "Milliy g‘oya, ma’naviyat asoslari va huquq ta’limi"),
-        ("Ijtimoiy fanlar", "Ijtimoiy fanlar"),
-        ("Jismoni madaniyat", "Jismoni madaniyat"),
-        ("Sport turlarini o‘qitish metodikasi", "Sport turlarini o‘qitish metodikasi"),
-        ("Ingliz tili va adabiyoti", "Ingliz tili va adabiyoti"),
-        ("Ingliz tili amaliy kursi", "Ingliz tili amaliy kursi"),
-        ("Fakultetlararo chet tillar", "Fakultetlararo chet tillar"),
-        ("Rus tili va adabiyoti", "Rus tili va adabiyoti"),
-        ("Qozoq tili va adabiyoti", "Qozoq tili va adabiyoti"),
-        ("Umumiy tibbiy fanlar", "Umumiy tibbiy fanlar"),
-    ]
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 
+# --- Ma'lumotnoma modellar ---
+class Kafedra(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name="Kafedra nomi")
+    def __str__(self): return self.name
+    class Meta: verbose_name = "Kafedra"; verbose_name_plural = "Kafedralar"; ordering = ['name']
 
-class UserCreate(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User,on_delete=models.CASCADE )
-    name = models.CharField(max_length=25, verbose_name='Ismi')
-    lastname = models.CharField(max_length=25, verbose_name='Familiyasi')
-    surname = models.CharField(max_length=25, verbose_name='Otasining ismi')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
-    ilimiy_darajasi = models.CharField(max_length=255,  verbose_name='Ma\'lumoti')
-    user_lavozimi = models.CharField(max_length=255, verbose_name='Lavozimi')
-    tel = models.IntegerField(verbose_name='Telefon raqami')
-    image = models.ImageField(upload_to='user_logo/')
-    mail = models.CharField(max_length=250, verbose_name='Mail')
-    
-    
-    @classmethod
-    def total_professor(cls):
-        return cls.objects.count()
-    
-    def __str__(self):
-        return self.lastname
+class Lavozim(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name="Lavozim nomi")
+    def __str__(self): return self.name
+    class Meta: verbose_name = "Lavozim"; verbose_name_plural = "Lavozimlar"; ordering = ['name']
 
-tanlov = (
-    ('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf'),
-)
-
-tanlovcha = (
-    ('kafedra mudiri', 'kafedra mudiri'), 
-    ('kafedra professori', 'kafedra professori'), 
-    ('kafedra dotsenti', 'kafedra dotsenti'), 
-    ("kafedra katta o‘qituvchisi","kafedra katta o‘qituvchisi"), 
-    ("kafedra o‘qituvchisi lavozimi","kafedra o‘qituvchisi lavozimi")
-)
 class Kengash(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Blyuten nomi')
+    name = models.CharField(max_length=255, unique=True, verbose_name="Kengash nomi")
+    def __str__(self): return self.name
+    class Meta: verbose_name = "Kengash"; verbose_name_plural = "Kengashlar"
 
-    def __str__(self):
-        return self.name
-
-# IlmiyUnvon modeli
-class IlmiyUnvon(models.Model):
-    kengash = models.ForeignKey(Kengash, on_delete=models.CASCADE, verbose_name="Kengash nomi")
-    name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
-    unvon = models.CharField(max_length=255, verbose_name='Ilmiy Unvon')
-    unvon_shifr = models.CharField(max_length=255, verbose_name='Ilmiy Unvon Shifri')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Ilmiy Unvon"
-        verbose_name_plural = "Ilmiy Unvonlar"
-
-# Tanlov modeli
-class Tanlov(models.Model):
-    kengash = models.ForeignKey(Kengash, on_delete=models.CASCADE, verbose_name="Kengash nomi")
-    name = models.CharField(max_length=255, verbose_name='Ism Familiya sharif')
-    kaf = models.CharField(max_length=155, choices=fakultets, default=None, verbose_name='Kafedrasi')
-    scientific_title = models.CharField(max_length=255, choices=tanlovcha, verbose_name="Lavozimni tanlang")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Tanlov"
-        verbose_name_plural = "Tanlovlar"
-
-class Vote(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    tanlov = models.ForeignKey(Tanlov, on_delete=models.CASCADE)
+# --- Foydalanuvchi Profili Modeli ---
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', verbose_name="Foydalanuvchi")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    surname = models.CharField(max_length=100, verbose_name="Otasining ismi")
+    kafedra = models.ForeignKey(Kafedra, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Kafedrasi")
+    academic_degree = models.CharField(max_length=255, verbose_name="Ilmiy darajasi")
+    position = models.CharField(max_length=255, verbose_name="Lavozimi")
+    phone_number = models.CharField(max_length=20, verbose_name="Telefon raqami")
+    image = models.ImageField(upload_to='user_images/', blank=True, null=True, verbose_name="Rasmi")
     
-    ovoz = models.CharField(max_length=10, choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')], verbose_name='Ovoz')
+    def __str__(self): return f"{self.user.last_name} {self.user.first_name}"
+    class Meta: verbose_name = "Foydalanuvchi Profili"; verbose_name_plural = "Foydalanuvchi Profillari"
 
+# ==========================================================
+# 1. SAYLOV TIZIMI (Bir lavozimga bir nechta nomzod)
+# ==========================================================
+
+class Saylov(models.Model):
+    """Bitta lavozim uchun bir nechta nomzodlar bellashadigan saylov jarayoni."""
+    lavozim = models.ForeignKey(Lavozim, on_delete=models.CASCADE, verbose_name="Saylov lavozimi")
+    title = models.CharField(max_length=255, verbose_name="Saylov sarlavhasi", help_text="Masalan, 'Fizika-matematika fakulteti dekanligi uchun saylov'")
+    
     def __str__(self):
-        return f"{self.tanlov.name} - {self.ovoz}"
+        return self.title
 
     class Meta:
-        verbose_name = "Ovoz Berish"
-        verbose_name_plural = "Lavozimga ovoz berishlar"
+        verbose_name = "Saylov"
+        verbose_name_plural = "Saylovlar"
 
-class Vote2(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ilmiy = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE)
-    ovoz = models.CharField(max_length=10, choices=[('Xa', 'Xa'), ('yoq', 'Yoq'), ('betaraf', 'Betaraf')], verbose_name='Ovoz')
-
+# Tanlov modeli endi Saylovdagi Nomzodni ifodalaydi
+class Tanlov(models.Model):
+    saylov = models.ForeignKey(Saylov, on_delete=models.CASCADE, related_name='nomzodlar', verbose_name="Saylov")
+    candidate_name = models.CharField(max_length=255, verbose_name="Nomzod (F.I.Sh)")
+    
     def __str__(self):
-        return f"{self.ilmiy.name} - {self.ovoz}"
+        return f"{self.candidate_name} ({self.saylov.lavozim.name} uchun nomzod)"
 
     class Meta:
-        verbose_name = "Ovoz Berish"
-        verbose_name_plural = "Ilmiy kengash ovozlari"
+        verbose_name = "Saylov nomzodi"
+        verbose_name_plural = "Saylov nomzodlari"
+        ordering = ['candidate_name']
 
+# Saylov uchun maxsus ovoz berish modeli
+class SaylovVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saylov_votes')
+    saylov = models.ForeignKey(Saylov, on_delete=models.CASCADE, related_name='votes')
+    chosen_candidate = models.ForeignKey(Tanlov, on_delete=models.CASCADE, related_name='chosen_votes', verbose_name="Tanlangan nomzod")
 
-    # unvon = models.ForeignKey(IlmiyUnvon, on_delete=models.CASCADE, verbose_name='Saylanuvchi')
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Foydalanuvchi ismi')
-    # scientific_title = models.CharField(
-    #     max_length=20,
-    #     choices=tanlov,
-    #     default='betaraf',
-    #     verbose_name="O'z ovozingini tanlang"
-    # )
+    def clean(self):
+        if self.chosen_candidate.saylov != self.saylov:
+            raise ValidationError("Tanlangan nomzod ushbu saylovga tegishli emas.")
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
-    # class Meta:
-    #     verbose_name = "Ovoz berish"
-    #     verbose_name_plural = "Ovoz berish"
+    class Meta:
+        unique_together = ('user', 'saylov')
+        verbose_name = "Saylov ovozi"
+        verbose_name_plural = "Saylov ovozlari"
 
-    # @staticmethod
-    # def count_votes():
-    #     votes = Vote.objects.all()
-    #     scientific_titles = [vote.scientific_title for vote in votes]
-    #     vote_counts = Counter(scientific_titles)
-    #     return dict(vote_counts)
+# ==========================================================
+# 2. STANDART OVOZ BERISH TIZIMI (Ha/Yo'q/Betaraf)
+# ==========================================================
 
+class IlmiyUnvon(models.Model):
+    candidate_name = models.CharField(max_length=255, verbose_name="Nomzod (F.I.Sh)")
+    title = models.CharField(max_length=255, verbose_name="Beriladigan ilmiy unvon")
+    title_code = models.CharField(max_length=255, verbose_name="Ilmiy unvon shifri")
+    votes = GenericRelation('Vote')
+    def __str__(self): return f"Unvon: {self.candidate_name} ({self.title})"
+    class Meta: verbose_name = "Ilmiy Unvon uchun nomzod"; verbose_name_plural = "Ilmiy Unvon uchun nomzodlar"
+
+class BoshqaMasala(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Masala sarlavhasi")
+    description = models.TextField(verbose_name="Masala tavsifi", blank=True)
+    votes = GenericRelation('Vote')
+    def __str__(self): return f"Masala: {self.title}"
+    class Meta: verbose_name = "Boshqa masala"; verbose_name_plural = "Boshqa masalalar"
+
+# Standart ovoz berish uchun universal model
+class Vote(models.Model):
+    class OvozChoices(models.TextChoices):
+        HA = 'ha', "Ha"
+        YOQ = 'yoq', "Yo'q"
+        BETARAF = 'betaraf', "Betaraf"
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='votes')
+    ovoz = models.CharField(max_length=10, choices=OvozChoices.choices)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    class Meta:
+        verbose_name = "Standart Ovoz"; verbose_name_plural = "Standart Ovozlar"
+        unique_together = ('user', 'content_type', 'object_id')
+
+# ==========================================================
+# MARKAZIY BYULLETEN MODELI
+# ==========================================================
+class Byulleten(models.Model):
+    kengash = models.ForeignKey(Kengash, on_delete=models.CASCADE, related_name='byulletenlar')
+    title = models.CharField(max_length=255, verbose_name="Byulleten sarlavhasi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, verbose_name="Ovoz berish uchun ochiqmi?")
+    
+    # Byulleten barcha turdagi masalalarni jamlaydi
+    saylovlar = models.ManyToManyField(Saylov, blank=True, related_name="byulletenlar", verbose_name="Saylovlar")
+    unvonlar = models.ManyToManyField(IlmiyUnvon, blank=True, related_name="byulletenlar", verbose_name="Ilmiy unvonlar")
+    boshqa_masalalar = models.ManyToManyField(BoshqaMasala, blank=True, related_name="byulletenlar", verbose_name="Boshqa masalalar")
+    
+    def __str__(self): return f"{self.title} ({self.kengash.name})"
+    class Meta: verbose_name = "Byulleten"; verbose_name_plural = "Byulletenlar"; ordering = ['-created_at']
