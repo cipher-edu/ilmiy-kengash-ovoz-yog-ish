@@ -1,40 +1,129 @@
 {% extends 'base.html' %}
 
-{% block title %}Faol Ovoz Berishlar{% endblock %}
+{% block title %}Ovoz berish uchun Byulletenlar{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Faol Ovoz Berishlar (Byulletenlar)</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h1 class="h2 mb-0">Ovoz berish uchun Byulletenlar</h1>
+    <span class="text-muted d-none d-sm-block">Saralash: Yangilari yuqorida</span>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-body">
         {% if byulletenlar %}
-            <div class="list-group">
+            <div class="list-group list-group-flush">
                 {% for byulleten in byulletenlar %}
-                    <a href="{% url 'byulleten_detail' byulleten.pk %}" class="list-group-item list-group-item-action p-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ byulleten.title }}</h5>
-                            <small class="text-muted">{{ byulleten.created_at|date:"d.m.Y" }}</small>
+                    {# Byulleten holatiga qarab stillarni belgilaymiz #}
+                    {% with is_disabled=byulleten.is_expired|add:byulleten.is_not_started %}
+                        <div class="list-group-item p-3 {% if is_disabled %}list-group-item-light disabled-item{% else %}list-group-item-action{% endif %}">
+                            <div class="row align-items-center">
+                                <div class="col-md-7">
+                                    <h5 class="mb-1">
+                                        {# Agar kirish mumkin bo'lsa, byulletenni link qilamiz #}
+                                        {% if not is_disabled %}
+                                            <a href="{% url 'byulleten_detail' byulleten.pk %}" class="stretched-link text-decoration-none text-dark fw-bold">{{ byulleten.title }}</a>
+                                        {% else %}
+                                            <span class="fw-bold">{{ byulleten.title }}</span>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="mb-1 text-muted small">
+                                        <strong>Kengash:</strong> {{ byulleten.kengash.name }}
+                                    </p>
+                                </div>
+                                <div class="col-md-5 d-flex justify-content-between align-items-center mt-2 mt-md-0">
+                                    {# Byulleten holatini ko'rsatuvchi belgi (badge) #}
+                                    <div class="status-badge">
+                                        {% if byulleten.is_expired %}
+                                            <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis">
+                                                <i class="bi bi-x-circle-fill me-1"></i> Muddati tugagan
+                                            </span>
+                                            <small class="d-block text-muted">{{ byulleten.end_time|date:"d.m.Y H:i" }}</small>
+                                        {% elif byulleten.is_not_started %}
+                                            <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis">
+                                                <i class="bi bi-hourglass-split me-1"></i> Boshlanmagan
+                                            </span>
+                                            <small class="d-block text-muted">{{ byulleten.start_time|date:"d.m.Y H:i" }}</small>
+                                        {% else %}
+                                            <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Kengashda ishtirok etish mumkin
+                                            </span>
+                                            {% if byulleten.end_time %}
+                                            <small class="d-block text-muted">Tugaydi: {{ byulleten.end_time|date:"d.m.Y H:i" }}</small>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <i class="bi bi-chevron-right d-none d-md-block fs-4 text-muted"></i>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mb-1 text-muted">
-                            <strong>Kengash:</strong> {{ byulleten.kengash.name }}
-                        </p>
-                        <div class="d-flex align-items-center justify-content-end mt-2">
-                            <span class="btn btn-primary btn-sm">
-                                Ovoz berishga o'tish <i class="bi bi-arrow-right-short"></i>
-                            </span>
-                        </div>
-                    </a>
+                    {% endwith %}
                 {% endfor %}
             </div>
+
+            <!-- ===== PAGINATION BLOKI ===== -->
+            {% if is_paginated %}
+                <nav aria-label="Sahifalash" class="mt-4 pt-3 border-top">
+                    <ul class="pagination justify-content-center">
+                        
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <span>«</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">«</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <span>»</span>
+                                </a>
+                            </li>
+                        {% else %}
+                             <li class="page-item disabled">
+                                <span class="page-link">»</span>
+                            </li>
+                        {% endif %}
+                        
+                    </ul>
+                </nav>
+            {% endif %}
+            <!-- ===== /PAGINATION BLOKI ===== -->
+
         {% else %}
             <div class="text-center p-5">
-                <i class="bi bi-info-circle-fill display-4 text-info"></i>
-                <h4 class="mt-3">Hozirda faol ovoz berishlar mavjud emas.</h4>
-                <p class="text-muted">Iltimos, keyinroq tekshirib ko'ring.</p>
+                <i class="bi bi-folder2-open display-4 text-info"></i>
+                <h4 class="mt-3">Byulletenlar topilmadi</h4>
+                <p class="text-muted">Sizga ruxsat etilgan faol byulletenlar hozircha mavjud emas.</p>
             </div>
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .disabled-item {
+        opacity: 0.65;
+    }
+    .list-group-item.list-group-item-action {
+        transition: background-color 0.2s ease-in-out;
+    }
+</style>
 {% endblock %}
