@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: gunicorn ilmiy.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ilmiydb
+      POSTGRES_USER: ilmiyuser
+      POSTGRES_PASSWORD: ilmiypass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
