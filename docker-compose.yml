@@ -1,28 +1,46 @@
-version: '3.9'
+# docker-compose.yml
+
+version: '3.8'
 
 services:
+  # 1. PostgreSQL ma'lumotlar bazasi servisi
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev  # Development uchun
+    ports:
+      - "5432:5432"
+
+  # 2. Django web-ilovasi servisi
   web:
     build: .
-    command: gunicorn ilmiy.wsgi:application --bind 0.0.0.0:8000
+    # Development uchun `manage.py runserver` ishlatamiz
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/app  # Kod o'zgarganda avtomatik yangilanish uchun
+      - static_volume:/app/staticfiles  # Static fayllar uchun
+      - media_volume:/app/mediafiles    # Media fayllar uchun
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ./.env.dev  # Development uchun
     depends_on:
-      - db
-    restart: always
+      - db  # Avval bazani ishga tushirish
 
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: ilmiydb
-      POSTGRES_USER: ilmiyuser
-      POSTGRES_PASSWORD: ilmiypass
+  # 3. Nginx servisi (static va media fayllarga xizmat qilish uchun)
+  nginx:
+    build: ./nginx
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    ports:
+      - "80:80"  # Tashqi 80 portni ichki 80 ga bog'laymiz
+    depends_on:
+      - web
 
 volumes:
-  pgdata:
+  postgres_data:
+  static_volume:
+  media_volume:
