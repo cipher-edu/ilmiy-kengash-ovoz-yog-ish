@@ -3,11 +3,9 @@ version: '3.9'
 services:
   web:
     build: .
-    command: gunicorn ilmiy.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - .:/app
+    command: gunicorn ilmiy.wsgi:application --bind 0.0.0.0:8080
     ports:
-      - "8000:8000"
+      - "8080:8080"
     env_file:
       - .env
     depends_on:
